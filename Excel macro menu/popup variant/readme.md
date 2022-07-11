@@ -1,4 +1,5 @@
-When you create vbe window menus they need event handler which breaks if code execution is stopped.  (have a look at my excel menu builder on github)   
+When you create vbe window menus they need event handler which breaks if code execution is stopped.  
+(have a look at my [menu builder from sheet data](https://github.com/alexofrhodes/vba-Multiple-Commandbars-from-sheet-data))   
 (i have writen code to format the codepane content or inset snippets etc for which i wanted to have a menu inside the vbe window)   
 
 This problem doesn't occur on excel ribbon ui elements because they don't depend on event handler.  
