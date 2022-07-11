@@ -6,7 +6,8 @@ Ugly solution would be to have a button in excel ribbon to recreate the event ha
 But it is sooo easy to create popup menus with AutoHotkey to run your excel macros!  
 
 replace workbookname variable with your own and make a list of your macros in the vba.menu file.  
-can be modified to hold macros from different workbooks if interested
+can be modified to hold macros from different workbooks if interested.
+!!! You must call macros without parameters (or with optional parameters which will be self assigned in the sub or ask user input)
 
 <img src="https://user-images.githubusercontent.com/62287665/172789520-b56c74f3-b5e8-4e83-9401-a54d3db82e8c.jpg" width="400"> <img src="https://user-images.githubusercontent.com/62287665/172789524-cf018151-86bf-4a24-8f01-bf20ec09b6c7.jpg" width="400">
 <img src="https://user-images.githubusercontent.com/62287665/174991681-3a9ae151-0858-490e-beee-7c9b1bce5e99.jpg" width="400" height="">
