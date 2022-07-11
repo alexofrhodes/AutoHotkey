@@ -1,11 +1,11 @@
-When you create vbe window menus they need event handler which breaks if code execution is stopped.  
-(i have writen code to format the codepane content or inset snippets etc for which i wanted to have a menu inside the vbe window,  
-have a look at my excel menu builder on github.  
+When you create vbe window menus they need event handler which breaks if code execution is stopped.  (have a look at my excel menu builder on github)   
+(i have writen code to format the codepane content or inset snippets etc for which i wanted to have a menu inside the vbe window)   
+
 This problem doesn't occur on excel ribbon ui elements because they don't depend on event handler.  
 Ugly solution would be to have a button in excel ribbon to recreate the event handler.  
 But it is sooo easy to create popup menus with AutoHotkey to run your excel macros!  
 
-replace workbookname variable with your own and make a list of your macros in the vba.menu file.  
+Replace workbookname variable with your own and make a list of your macros in the vba.menu file.  
 can be modified to hold macros from different workbooks if interested.  
 !!! You must call macros without parameters (or with optional parameters which will be self assigned in the sub or ask user input)  
   
