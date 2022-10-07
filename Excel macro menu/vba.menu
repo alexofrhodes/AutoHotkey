@@ -1,135 +1,144 @@
 !RunExcelMacro!	
 .Keep Backups. No liability
-BookMarks
-	BookmarkSave		;Add to end
-	BookmarkLoad		;Load last
-	BookmarkList
-	BookmarkDelete
-	BookmarkReset
-	
-	Save
-		bmsave1
-		bmsave2
-		bmsave3
-		bmsave4
-		bmsave5
-		bmsave6
-		bmsave7
-		bmsave8
-		bmsave9
-		bmsave10
-	Load
-		bmload1
-		bmload2
-		bmload3
-		bmload4
-		bmload5
-		bmload6
-		bmload7
-		bmload8
-		bmload9
-		bmload10
+
+PROJECT
+	VbeSetFont
+	ShowUserformReferences
+	ShowUserformSkeleton
+	ListFolders
+	ShowUserformProjectManager
+	ShowUserformComponentsRemove
+	ShowUserformComponentsAdd
+	ShowUserformComponentsRename
+	CrackVBA
 ---
-Workbook
-	BackupActiveWorkbook
-	BackupActiveCodepaneWorkbook	
-	CaseProperModulesOfWorkbook
-	CaseProperProceduresOfWorkbook
-	DisableDebugPrintInWorkbook
-	EnableDebugPrintInWorkbook
-	ExportAllProcedures
-	getAllMissingDependencies
-	ListAllProcedureImports
-	IndentWorkbook
-	IsDuplicateProceduresInWorkbook
-	MacroLinkRemoverActiveWorkbook
-	MacroLinkRemoverActiveCodepaneWorkbook
-	MakeProceduresInWorkbookPrivate
-	MakeProceduresInWorkbookPublic
-	RemoveBlankLinesFromWorkbook
-	RemoveCommentsFromWorkbook
-	RemoveEmptyModules
-	ReplaceQuoteWithRemInWorkbook
-	SeparateProceduresAndFunctionsInWorkbook
-	SeparatePublicAndPrivateInWorkbook
-	SortProceduresWorkbook
-	UpdateAllProcedures
----
-Userform	
-	CopyControlProperties
-	CreateFrameMenu
-	DuplicateUserForm
-	MoveProceduresFromUserformToModule
-	PasteControlProperties
-	RenameControlAndCode
+USERFORMS
 	SideBySide
-	SortControls
-	SwitchControlNames
+	MoveProceduresFromUserformToModule
+	MoveProceduresFromAllUserformsToModules
+	DuplicateUserForm
+	ShowUserformFormBuilder
+	ShowFormBuilderSheet
+	CopyControlProperties
+	PasteControlProperties
 	UserformSelectedControlsSetHandCursor
----
-Module	
-	AddLineNumbersToModule
-	RemoveLineNumbersFromModule
-	DisableDebugPrintInModule
-	EnableDebugPrintInModule
-	IndentModule
+	SwitchControlPositions
+	SwitchControlNames
+	RenameControlAndCode
+	RemoveControlsCaptions
+	SortControlsVertivally
+	SortControlsHorizontally
+---	
+MODULES
+	MergeModules
+	RemoveEmptyModules
 	ListProceduresInModule
+	ListProceduresInWorkbook
+	CaseProperModulesOfWorkbook
+---	
+PROCEDURES
+	InsertTimerToProcedure
+	moveprocedureup
+	MoveProcedureDown
+	SortProceduresInModule
+	SortProceduresWorkbook
+	CaseProperProceduresOfWorkbook
+	CaseProperProcedures
+	SeparateProceduresAndFunctionsInModule
+	SeparateProceduresAndFunctionsInWorkbook
+	SeparatePublicAndPrivateInModule
+	SeparatePublicAndPrivateInWorkbook
 	MakeProceduresInModulePrivate
 	MakeProceduresInModulePublic
-	RemoveBlankLinesFromModule
-	RemoveCommentsFromModule
-	ReplaceQuoteWithRemInModule
-	SeparateProceduresAndFunctionsInModule
-	SeparatePublicAndPrivateInModule
-	SortProceduresInModule
+	MakeProceduresInWorkbookPrivate
+	MakeProceduresInWorkbookPublic
 ---
-Procedure	
-	AddLineNumbersToProcedure
-	RemoveLineNumbersFromProcedure
+LinkedProcedures
 	CreateShapeButtonToRunProcedure
-	DisableDebugPrintInProcedure
-	EnableDebugPrintInProcedure
+	IsDuplicateProceduresInWorkbook
+	AddListOfLinkedProceduresToProcedure
+	ListAllProcedureImports
 	ExportProcedure
-	FindWhichProceduresCallTargetProcedure
-	GetArguments
+	ExportAllProcedures
+	ImportProcedure
 	getMissingMissingDependenciesOfProcedure
+	getAllMissingDependencies
+	UpdateAllProcedures
+---	
+LINES
 	IndentProcedure
-	InsertTimerToProcedure	
+	IndentModule
+	IndentWorkbook
 	RemoveBlankLinesFromActiveProcedure
+	RemoveBlankLinesFromModule
+	RemoveBlankLinesFromWorkbook
 	RemoveCommentsFromActiveProcedure
+	RemoveCommentsFromModule
+	RemoveCommentsFromWorkbook
 	ReplaceQuoteWithRemInProcedure
----
-Selection	
-	AlignVbeCommentsToColumn
+	ReplaceQuoteWithRemInModule
+	ReplaceQuoteWithRemInWorkbook
+	AddLineNumbersToProcedure
+	AddLineNumbersToModule
+	RemoveLineNumbersFromProcedure
+	RemoveLineNumbersFromModule
+	DisableDebugPrintInProcedure
+	DisableDebugPrintInModule
+	DisableDebugPrintInWorkbook
+	EnableDebugPrintInProcedure
+	EnableDebugPrintInModule
+	EnableDebugPrintInWorkbook
+	DisableStopInProcedure
+	DisableStopInModule
+	DisableStopInWorkbook
+	EnableStopInProcedure
+	EnableStopInModule
+	EnableStopInWorkbook
+---	
+SELECTION
+	AlignVbeComments
+	AlignVbeColons
+	AlignDimAs
+	FoldLine
+	UnFoldLine
 	AssignEnumValuesInCodepaneSelection
 	EnumToCase
 	CaseLower
 	CaseProper
 	CaseUpper
+	CopyLines
+	CutLines
+	CommentLines
+	UnCommentLines
+	RemLines
+	UnRemLines
+	EncapsulateQuotes
+	EncapsulateParenthesis
+	EncapsulateMultipleCommaSeparatedWithQuotes
+	EncapsulateMultipleCommaSeparatedWithParenthesis
+	EncapsulateMultipleLinesWithParenthesis
+	EncapsulateMultipleLinesWithQuotes
+	FlipRotateCommas
+	FlipRotateLines
+	FlipEqualSign
+	FlipMultipleEqualSignOnMultipleLines
+	SortOnComma
+	SortOnNewline
+---	
+MOST USED
+	TemplateModule
+	TemplateProcedure
+	sysAddHeader
+	sysAddModified
+	sysAddTODO
+	ShowTodo
 	FindCode
-	FoldLine
-	UnFoldLine
-	ImportProcedure
 	GetArguments
-	SortSelection
----
-Snippets
-	InjectDevInfo	
-	InjectTemplateModule
-	InjectTemplateProcedure
-	InjectOnErrorResumeNext
-	InjectIf
-	InjectCase
-	InjectForCounter
-	InjectScreenUpdating
----
-Other	
-	ExtractCodeFromFiles
-	AddExtensibility
-	OpenReferencesForm
-	CrackVBA
-	DevInfo			;copy info
-	MacroLinkRemover
-	ProjectExplorer
-	CodeFinder
-	GithubImageFormat
+	SetToNothing
+	DebugPrintListOfTodoInModule
+	DebugPrintListOfFoldersInModule
+	LinesMoveUp
+	LinesMoveDown
+	LineDuplicate
+	LineIncrement
+	FormatVBA7

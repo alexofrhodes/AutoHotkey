@@ -16,7 +16,7 @@ setWorkingDir, % a_scriptDir
 	info on ezMenu at https://github.com/davebrny/ezMenu
 */
 
-WorkbookName:="ProjectStart.xlam!" 
+WorkbookName:="'vbArc-Addin.xlsm'!"     ; single quote & workbookname & single quote & !
 MenuFile:=	 A_ScriptDir . "\vba.menu" 
 
 ^+!H:: ;	ctrl + shift + alt + H

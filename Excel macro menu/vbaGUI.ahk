@@ -32,7 +32,7 @@ Header2
 #SingleInstance, force
 SetWorkingDir, %A_ScriptDir%
 
-WorkbookName:="ProjectStarter.xlam!" 
+WorkbookName:="'vbArc-Addin.xlsm'!" 	; single quote & workbookname & single quote & !
 MenuFile:=	 A_ScriptDir . "\vba.menu" 
 ItemsPerColumn:=11
 
@@ -197,7 +197,7 @@ RunExcelMacro:
 		MsgBox, 16,, Can't obtain Excel! 
 		return
 	}
-;MsgBox, 64,, Excel obtained successfully!   ;for debugging purposes
+	;MsgBox, 64,, Excel obtained successfully!   ;for debugging purposes
 	
 	;a space is allowed in the following format: [&1] MacroName
 	;to allow a GUI accelerator between the braces eg. [accelerator]
@@ -215,13 +215,14 @@ RunExcelMacro:
 	try {
 		XL.Run(macro)  
 	} catch {
-		MsgBox, 16,, Can't find %A_GuiControl% in the opened workbook!
+		MsgBox, 16,, Can't find %A_GuiControl% in %WorkbookName%
 	}
 	;Gosub, ExitApp
 	return
 }
 
-Excel_Get(WinTitle:="ahk_class XLMAIN", Excel7#:=1) {
+Excel_Get(WinTitle:="ahk_class XLMAIN", Excel7#:=1) 
+{
 	/*
 		Excel_Get by jethrow (modified)
 		Forum:    https://autohotkey.com/boards/viewtopic.php?f=6&t=31840
