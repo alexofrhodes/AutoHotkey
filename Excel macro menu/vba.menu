@@ -42,8 +42,6 @@ PROCEDURES
 	MoveProcedureDown
 	SortProceduresInModule
 	SortProceduresWorkbook
-	CaseProperProceduresOfWorkbook
-	CaseProperProcedures
 	SeparateProceduresAndFunctionsInModule
 	SeparateProceduresAndFunctionsInWorkbook
 	SeparatePublicAndPrivateInModule
@@ -57,7 +55,8 @@ LinkedProcedures
 	CreateShapeButtonToRunProcedure
 	IsDuplicateProceduresInWorkbook
 	AddListOfLinkedProceduresToProcedure
-	ListAllProcedureImports
+	ListAllProcedureImportsInWorkbook
+	ListAllProcedureImportsInModule
 	ExportProcedure
 	ExportAllProcedures
 	ImportProcedure
@@ -97,11 +96,10 @@ LINES
 ---	
 SELECTION
 	AlignVbeComments
-	AlignVbeColons
 	AlignDimAs
 	FoldLine
 	UnFoldLine
-	AssignEnumValuesInCodepaneSelection
+	AssignEnumValues
 	EnumToCase
 	CaseLower
 	CaseProper

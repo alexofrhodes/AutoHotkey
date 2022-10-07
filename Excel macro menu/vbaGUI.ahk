@@ -32,12 +32,15 @@ Header2
 #SingleInstance, force
 SetWorkingDir, %A_ScriptDir%
 
-WorkbookName:="'vbArc-Addin.xlsm'!" 	; single quote & workbookname & single quote & !
+WorkbookName:="'vbArc-Addin.xlsm'!" 
 MenuFile:=	 A_ScriptDir . "\vba.menu" 
 ItemsPerColumn:=11
 
 ;get menu headers for dropdown menu
 gosub GetGuis 		; will continue to ChooseGui
+
+; OnMessage("0x200", "MOUSEOVER")
+; OnMessage("0x2A2", "MOUSELEAVE")
 
 ;Hotkey
 ^+h:: 	;ctrl + shift + H
@@ -59,10 +62,10 @@ The selection change will create the corresponding menu
 AltSubmit passes the element's index instead of text to the variable fo the control
 */
 
-Gui, Add, DropDownList, section choose%ChooseGui% AltSubmit gChooseGui vChooseGui, %Guis%
+Gui, Add, DropDownList, section choose%ChooseGui% AltSubmit gChooseGui vChooseGui, %Guis% 
 
 ;sections resets the x y position for subsequent controls
-Gui, Add, Text, section 
+Gui, Add, Text, x5 w0 section 
 
 ;put text file's content into a variable
 FileRead, content, %MenuFile%
@@ -164,9 +167,11 @@ LoadMenu:
 	Gui, Add, Link,y+10, <a href="https://github.com/alexofrhodes/AutoHotkey">GitHub</a> 
 	Gui, Add, Link,x+40, <a href="https://www.youtube.com/channel/UC5QH3fn1zjx0aUjRER_rOjg">YouTube</a> 
 	
-	;Gui options
+	;Gui options	
 	Gui, +AlwaysOnTop ;-Border +resize 
-	Gui, Show	;, x%xpos% y%ypos%, Main
+	Gui, Show,,vbaGUI	; x%xpos% y%ypos%
+
+	;WinSet, Trans, 150, vbaGUI
 	return 
 	
 	;Close GUI when exit button pressed or ESC pressed. This doesn't stop the script's execution.
@@ -258,3 +263,10 @@ Excel_Get(WinTitle:="ahk_class XLMAIN", Excel7#:=1)
 		return "Error accessing the application object."
 }
 
+MOUSEOVER(){
+	WinSet, Trans, 255, vbaGUI
+}
+
+MOUSELEAVE(){
+	WinSet, Trans, 80, vbaGUI
+}
