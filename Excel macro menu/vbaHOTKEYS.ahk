@@ -12,7 +12,26 @@ setWorkingDir, % a_scriptDir
 
 ;#IfWinActive ahk_class wndclass_desked_gsk ;if vbeditor window is active
 	
-WorkbookName:="ProjectStarter.xlam!" 
+WorkbookName:="'vbArc-Addin.xlsm'!" 
+
+return
+
+;control 1
+^1::
+item := "test1" ;"YOUR_SUB_NAME"
+Gosub,RunExcelMacro
+return
+
+^2:: ;alt 2
+item := "test2" ;"YOUR_SUB_NAME"
+Gosub,RunExcelMacro
+return
+
+
+RunExcelMacro:
+macro:= WorkbookName . item
+
+;check if macro exists in workbook
 
 ; If Excel_Get fails it returns an error message instead of an object.
 XL := Excel_Get() 
@@ -23,24 +42,6 @@ if !IsObject(XL)  {
 ;MsgBox, 64,, Excel obtained successfully!   ;for debugging purposes
 }
 
-return
-
-;ctrl + h
-^h::
-item := "test1" ;"YOUR_SUB_NAME"
-Gosub,RunExcelMacro
-return
-
-^o::
-item := "test2" ;"YOUR_SUB_NAME"
-Gosub,RunExcelMacro
-return
-
-
-RunExcelMacro:
-macro:= WorkbookName . item
-
-;check if macro exists in workbook
 try {
 	XL.Run(macro)  
 } catch {
