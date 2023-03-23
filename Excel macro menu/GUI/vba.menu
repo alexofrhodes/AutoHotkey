@@ -1,0 +1,40 @@
+!RunExcelMacro!	
+.Keep Backups. No liability
+
+PROJECT
+	VbeSetFont
+---
+USERFORMS
+	SideBySide
+	CopyControlProperties
+	PasteControlProperties
+---	
+MODULES
+	ListProceduresInModule
+---	
+PROCEDURES
+	SortProceduresInModule
+---
+LinkedProcedures
+	ExportProcedure
+	ImportProcedure
+---	
+SELECTION
+	AlignVbeComments
+	AlignDimAs
+---	
+MOST USED
+	TemplateModule
+	TemplateProcedure
+	sysAddHeader
+	sysAddModified
+	sysAddTODO
+	ShowTodo
+	FindCode
+	GetArguments
+	SetToNothing
+	LinesMoveUp
+	LinesMoveDown
+	LineDuplicate
+	LineIncrement
+	FormatVBA7
