@@ -1,40 +1,114 @@
 !RunExcelMacro!	
 .Keep Backups. No liability
 
-PROJECT
-	VbeSetFont
----
-USERFORMS
-	SideBySide
+Codemodule
+	a_cm_AlignAs
+	a_cm_AlignColumn
+	a_cm_AlignComments
+	a_cm_AssignEnumValues
+	a_cm_BeautifyFunction
+	a_cm_BringProcedureHere
+	a_cm_CaseLower
+	a_cm_CaseProper
+	a_cm_CaseUpper
+	a_cm_Comment
+	a_cm_Copy
+	a_cm_Cut
+	a_cm_DimMerge
+	a_cm_DimSeparate
+	a_cm_EncapsulateParenthesis
+	a_cm_EncapsulateQuotes
+	a_cm_EnumToCase
+	a_cm_FoldLine
+	a_cm_FormatVBA7
+	a_cm_Increment
+	a_cm_MoveDown
+	a_cm_MoveUp
+	a_cm_RemAdd
+	a_cm_Remove
+	a_cm_RotateCommas
+	a_cm_SortComma
+	a_cm_SortLines
+	a_cm_ToDo
+	a_cm_ToggleComments
+	a_cm_UnFoldLine
+	a_cm_Uncomment
+	a_cm_InjectArgumentStyle	
+Procedure
+	a_ap_AddToLinkedTable
+	a_ap_BringLinkedProceduresHere
+	a_ap_CommentsRemove
+	a_ap_CommentsToOwnLine
+	a_ap_CreateCaller
+	a_ap_Export
+	a_ap_ExportLinkedCode
+	a_ap_FoldDeclaration
+	a_ap_UnfoldDeclaration
+	a_ap_Indent
+	a_ap_InjectDescription
+	a_ap_InjectLinkedLists
+	a_ap_InjectModification
+	a_ap_InjectObjectsRelease
+	a_ap_InjectTimer
+	a_ap_MoveDown
+	a_ap_MoveToAssignedModule
+	a_ap_MoveToBottom
+	a_ap_MoveToTop
+	a_ap_MoveUp
+	a_ap_NumbersAdd
+	a_ap_NumbersRemove
+	a_ap_PrintDims
+	a_ap_RemoveEmptyLines
+	a_ap_RemoveIncludeLines
+	a_ap_ScopePrivate
+	a_ap_ScopePublic
+	a_ap_ScopeSuggested
+	a_ap_TestCreate
+	a_ap_Update
+Module
+	a_am_CodeRemove
+	a_am_CommentsRemove
+	a_am_CommentsToOwnLine
+	a_am_DisableDebugPrint
+	a_am_DisableStop
+	a_am_Duplicate
+	a_am_EnableDebugPrint
+	a_am_EnableStop
+	a_am_Export
+	a_am_ExportProcedures
+	a_am_HeaderAdd
+	a_am_Indent
+	a_am_ListProcedures
+	a_am_PrintListOfInclude
+	a_am_PrintTodoList
+	a_am_ProcedureFoldDeclarations
+	a_am_ProcedureScopePrivate
+	a_am_ProcedureScopePublic
+	a_am_ProceduresNames
+	a_am_RemoveEmptyLinesButLeaveOne
+	a_am_SortAZ
+	a_am_SortByKind
+	a_am_SortByScope
+	a_am_UpdateProcedures
+Designer
 	CopyControlProperties
+	CreateFrameMenu
 	PasteControlProperties
----	
-MODULES
-	ListProceduresInModule
----	
-PROCEDURES
-	SortProceduresInModule
----
-LinkedProcedures
-	ExportProcedure
-	ImportProcedure
----	
-SELECTION
-	AlignVbeComments
-	AlignDimAs
----	
-MOST USED
-	TemplateModule
-	TemplateProcedure
-	sysAddHeader
-	sysAddModified
-	sysAddTODO
-	ShowTodo
-	FindCode
-	GetArguments
-	SetToNothing
-	LinesMoveUp
-	LinesMoveDown
-	LineDuplicate
-	LineIncrement
-	FormatVBA7
+	RemoveCaption
+	RenameControlAndCode
+	SetHandCursor
+	SortControlsHorizontally
+	SortControlsVertivally
+	SwitchNames
+	SwitchPositions
+Userforms
+	uShow_ComponentsAdd
+	uShow_ComponentsRemove
+	uShow_ComponentsRename
+	uShow_Exporter
+	uShow_FormBuilder
+	uShow_FormNavigator
+	uShow_ProjectExplorer
+	uShow_References
+	uShow_Skeleton
+	uShow_SnippetsVBE

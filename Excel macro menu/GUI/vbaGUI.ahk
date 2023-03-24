@@ -40,6 +40,7 @@ Header2
 ;#IfWinActive, ahk_exe EXCEL.EXE			;if any excel window is active
 ;#IfWinActive ahk_class wndclass_desked_gsk ;if vbeditor window is active
 
+
 #SingleInstance, force
 SetWorkingDir, %A_ScriptDir%
 #include ini-editor.ahk
@@ -106,8 +107,10 @@ GetGuis:
 ;Setup GUI with a dropdown to allow switching
 ChooseGui:
 {
-	if (ChooseGui!="") 
-		ChooseGui=0
+	
+	if (ChooseGui="") 
+		ChooseGui:=0
+
 	
 	Gui, Submit
 	Gui, Destroy
@@ -117,7 +120,7 @@ ChooseGui:
 		The selection change will create the corresponding menu
 		AltSubmit passes the element's index instead of text to the variable fo the control
 	*/
-
+	
 	Gui, Add, DropDownList, section choose%ChooseGui% AltSubmit gChooseGui vChooseGui, %Guis%
 	gui, add, Button,ys gEditFile, Edit Menu
 	gui, add, button, ys gMenuSettings,  Options
@@ -129,60 +132,69 @@ ChooseGui:
 
 	;put text file's content into a variable
 
-	;split it into an array
-	var:=StrSplit(content, "---")
+	; ;split it into an array
+	; var:=StrSplit(content, "---")
 
-	;chose the array element matching the dropdown's selected option (matching index)
-	lines:= var[ChooseGui]
+	; ;chose the array element matching the dropdown's selected option (matching index)
+	; lines:= var[ChooseGui]
 }
 
 ;Create GUI according to dropdown selection (by index)
 LoadMenu:
 {
+	guicontrolget, DDSelection, , ChooseGui, text
 	counter:=0
-	for each, line in StrSplit(lines, "`n", "`r")
-	{
-		if ErrorLevel
-			break
-
-		;Some formatting which allows us to use the same text file as when using EZmenu (look at my excel menu variant)	
-		FirstCharacter:= substr(line,1,1)
-		if FirstCharacter in !,.
-			continue
-		if not (firstCharacter=A_Tab)
-			continue
-		Position:= InStr(line, ";")
-		if Position>0
-			line:=SubStr(line, 1, Position - 1)
-		Position:= InStr(line, "!")		;because ezMenu uses ! key to switch the GoSub
-		if Position>0
-			line:=SubStr(line, 1, Position - 1)
-		line:=trim(line)
-
-		;How many controls to allow per column
-		LimitReached:=Mod(counter, ItemsPerColumn)
-		
-		;alternatively to force new column leave empty line (resets counter for the rest of the controls in the new column)
-		if line =
+	MenuFound:=0
+	for each, line in StrSplit(content, "`n", "`r")
 		{
-			Gui, Add, Text,ys
-			counter:=0
-			continue
-		;or if controls placed in active column reached set limit, start new column
-		}else if (%LimitReached%=0)
-		{
-			Gui, Add, Text,ys 
+			if (line=DDSelection)
+				{
+					MenuFound++
+					continue
+				}	
+				
+			if (MenuFound=1)
+				{
+				; if (%DDSelection%="Codemodule")
+				; 	msgbox ,,,%DDSelection%    %line%
+
+				FirstCharacter:= substr(line,1,1)
+				if FirstCharacter in !,.
+					continue
+				if not (firstCharacter=A_Tab)
+					Break
+				Position:= InStr(line, ";")
+				if Position>0
+					line:=SubStr(line, 1, Position - 1)
+				Position:= InStr(line, "!")		;because ezMenu uses ! key to switch the GoSub
+				if Position>0
+					line:=SubStr(line, 1, Position - 1)
+				line:=trim(line)
+				
+				;How many controls to allow per column
+				LimitReached:=Mod(counter, ItemsPerColumn)
+				
+				;alternatively to force new column leave empty line (resets counter for the rest of the controls in the new column)
+				if line =
+				{
+					Gui, Add, Text,ys
+					counter:=0
+					continue
+				;or if controls placed in active column reached set limit, start new column
+				}else if (%LimitReached%=0)
+				{
+					Gui, Add, Text,ys 
+				}
+				
+				/*
+				Add a button with the caption = the text of the line, in this case 
+				the name of a VBA procedure to run with RunExcelMacro 
+				if the workbook (WorkbookName) which was set at the top is open and contains said Procedure
+				*/
+				Gui, Add, Button, gRunExcelMacro, %line%	
+				counter++
+			}			
 		}
-		
-		/*
-		Add a button with the caption = the text of the line, in this case 
-		the name of a VBA procedure to run with RunExcelMacro 
-		if the workbook (WorkbookName) which was set at the top is open and contains said Procedure
-		*/
-		Gui, Add, Button, gRunExcelMacro, %line%
-		counter++
-	}
-
 }
 
 FinalizeGUI:
