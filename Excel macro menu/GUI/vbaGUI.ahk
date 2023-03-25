@@ -23,7 +23,6 @@ NOTE:
 		vbaPOPUP.ahk (using EZmenu) supports multiple submenus
 		This vbaGUI.ahk can use the same menu file as vba, 
 		but supports only lvl1 = Category , lvl2 = Macro Name
-		and atm needs to divide menus with ---
 
 Example menu:
 
@@ -129,14 +128,6 @@ ChooseGui:
 
 	;sections resets the x y position for subsequent controls
 	Gui, Add, Text, xs section
-
-	;put text file's content into a variable
-
-	; ;split it into an array
-	; var:=StrSplit(content, "---")
-
-	; ;chose the array element matching the dropdown's selected option (matching index)
-	; lines:= var[ChooseGui]
 }
 
 ;Create GUI according to dropdown selection (by index)
@@ -155,8 +146,6 @@ LoadMenu:
 				
 			if (MenuFound=1)
 				{
-				; if (%DDSelection%="Codemodule")
-				; 	msgbox ,,,%DDSelection%    %line%
 
 				FirstCharacter:= substr(line,1,1)
 				if FirstCharacter in !,.
@@ -245,19 +234,17 @@ RunExcelMacro:
 	
 	;a space is allowed in the following format: [&1] MacroName
 	;to allow a GUI accelerator between the braces eg. [accelerator]
-
 	if instr(A_GuiControl, A_Space){
 		StringSplit, Procedure, A_GuiControl, %A_Space%
-		macro:= WorkbookName . Procedure2 
+		macro:= WorkbookName . "!" . Procedure2 
 	}else{
-		macro:= WorkbookName . A_GuiControl
+		macro:= WorkbookName . "!" . A_GuiControl
 	}
-	;MsgBox, %A_GuiControl% -  %procedure2% -  %macro%
 	
 	try {
 		XL.Run(macro)  
 	} catch {
-		MsgBox, 16,, Can't find the macro %A_GuiControl% in %WotkbookName%
+		MsgBox, 16,, Can't find the macro %A_GuiControl% in %WorkbookName%
 	}
 	
 	return
