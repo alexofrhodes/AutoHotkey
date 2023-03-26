@@ -16,6 +16,7 @@ Codemodule
 	a_cm_Cut
 	a_cm_DimMerge
 	a_cm_DimSeparate
+	a_cm_Duplicate
 	a_cm_EncapsulateParenthesis
 	a_cm_EncapsulateQuotes
 	a_cm_EnumToCase
@@ -25,7 +26,7 @@ Codemodule
 	a_cm_MoveDown
 	a_cm_MoveUp
 	a_cm_RemAdd
-	a_cm_Remove
+	a_cm_RemRemove
 	a_cm_RotateCommas
 	a_cm_SortComma
 	a_cm_SortLines
