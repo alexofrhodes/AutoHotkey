@@ -36,6 +36,7 @@ Header2
 
 */
 
+
 ;#IfWinActive, ahk_exe EXCEL.EXE			;if any excel window is active
 ;#IfWinActive ahk_class wndclass_desked_gsk ;if vbeditor window is active
 
@@ -43,6 +44,13 @@ Header2
 #SingleInstance, force
 SetWorkingDir, %A_ScriptDir%
 #include ini-editor.ahk
+
+
+#Include Class_ImageButton.ahk
+EStyle := [[0, 0x80F0F0F0, , , 8, 0xFFF0F0F0, 0x8046B8DA, 2] ; normal
+		, [0, 0x80C6E9F4, , , 8, 0xFFF0F0F0, 0x8046B8DA, 2] ; hover
+		, [0, 0x8086D0E7, , , 8, 0xFFF0F0F0, 0x8046B8DA, 2] ; pressed
+		, [0, 0x80F0F0F0, , , 8, 0xFFF0F0F0, 0x8046B8DA, 2]]
 
 
 ;Custom Tray Icon
@@ -62,11 +70,12 @@ AHK_NOTIFYICON(wParam, lParam)
 }
 
 ;Load Configuration
-IniRead, myHotkey, config.ini, Settings, myHotkey
-IniRead, WorkbookName, config.ini, Settings, WorkbookName
-IniRead, MenuFile, config.ini, Settings, MenuFile
-IniRead, ItemsPerColumn, config.ini, Settings, ItemsPerColumn
-Hotkey, %myHotkey%,Start
+LoadOptions:
+	IniRead, myHotkey, config.ini, Settings, myHotkey
+	IniRead, WorkbookName, config.ini, Settings, WorkbookName
+	IniRead, MenuFile, config.ini, Settings, MenuFile
+	IniRead, ItemsPerColumn, config.ini, Settings, ItemsPerColumn
+	Hotkey, %myHotkey%,Start
 
 return ;if you comment this out then the gui will show at startup (hotkey still works)
 
@@ -119,7 +128,9 @@ ChooseGui:
 		The selection change will create the corresponding menu
 		AltSubmit passes the element's index instead of text to the variable fo the control
 	*/
-	
+
+	; Gui,Font, s10, Arial
+
 	Gui, Add, DropDownList, section choose%ChooseGui% AltSubmit gChooseGui vChooseGui, %Guis%
 	gui, add, Button,ys gEditFile, Edit Menu
 	gui, add, button, ys gMenuSettings,  Options
@@ -133,6 +144,7 @@ ChooseGui:
 ;Create GUI according to dropdown selection (by index)
 LoadMenu:
 {
+	
 	guicontrolget, DDSelection, , ChooseGui, text
 	counter:=0
 	MenuFound:=0
@@ -180,7 +192,10 @@ LoadMenu:
 				the name of a VBA procedure to run with RunExcelMacro 
 				if the workbook (WorkbookName) which was set at the top is open and contains said Procedure
 				*/
-				Gui, Add, Button, gRunExcelMacro, %line%	
+				Gui, Add, Button, gRunExcelMacro hwndBtn, %line%
+
+				ImageButton.Create(Btn, line, EStyle*) ; define o estilo inicial
+
 				counter++
 			}			
 		}
@@ -205,7 +220,14 @@ FinalizeGUI:
 
 	;Gui options
 	Gui, +AlwaysOnTop ;-Border +resize 
+
+	Gui, +hwnd_hwnd
+	; Gui, Color, 0x000000
+	
 	Gui, Show	;, x%xpos% y%ypos%, Main
+	
+	; WinSet, Transparent, 225, % "ahk_id " _hwnd
+
 	return 
 }
 

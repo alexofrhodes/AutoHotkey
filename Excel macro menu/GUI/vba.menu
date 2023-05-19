@@ -23,6 +23,7 @@ Codemodule
 	a_cm_FoldLine
 	a_cm_FormatVBA7
 	a_cm_Increment
+	a_cm_injectDivider
 	a_cm_MoveDown
 	a_cm_MoveUp
 	a_cm_RemAdd
@@ -40,6 +41,7 @@ Procedure
 	a_ap_BringLinkedProceduresHere
 	a_ap_CommentsRemove
 	a_ap_CommentsToOwnLine
+	a_ap_ConvertBlankLinesToDividers
 	a_ap_CreateCaller
 	a_ap_Export
 	a_ap_ExportLinkedCode
@@ -80,6 +82,7 @@ Module
 	a_am_HeaderAdd
 	a_am_Indent
 	a_am_ListProcedures
+	a_am_ListProceduresPublic
 	a_am_PrintListOfInclude
 	a_am_PrintTodoList
 	a_am_ProcedureFoldDeclarations
