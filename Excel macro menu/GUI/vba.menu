@@ -20,8 +20,11 @@ Codemodule
 	a_cm_EncapsulateParenthesis
 	a_cm_EncapsulateQuotes
 	a_cm_EnumToCase
+	a_cm_FindCode
+	a_cm_PrintLinesLike
 	a_cm_FoldLine
 	a_cm_FormatVBA7
+	a_cm_ImportProcedure
 	a_cm_Increment
 	a_cm_injectDivider
 	a_cm_MoveDown
@@ -47,6 +50,7 @@ Procedure
 	a_ap_ExportLinkedCode
 	a_ap_FoldDeclaration
 	a_ap_UnfoldDeclaration
+	a_ap_ImportDependencies
 	a_ap_Indent
 	a_ap_InjectDescription
 	a_ap_InjectLinkedLists
