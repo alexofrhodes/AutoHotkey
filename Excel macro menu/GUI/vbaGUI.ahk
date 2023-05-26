@@ -162,7 +162,7 @@ LoadMenu:
 				FirstCharacter:= substr(line,1,1)
 				if FirstCharacter in !,.
 					continue
-				if not (firstCharacter=A_Tab)
+				if not (firstCharacter=A_Tab) && (trim(line)<>"")
 					Break
 				Position:= InStr(line, ";")
 				if Position>0
