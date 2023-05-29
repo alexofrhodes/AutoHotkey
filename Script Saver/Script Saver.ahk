@@ -47,7 +47,7 @@ CreateGui:
     Gui , Add, Button, w200 xs y+20 section gSaveScript, Save Script
 
 	;AUTHOR links
-	Gui, Add, Link,ys y+-35 section, 	<a href="https://github.com/alexofrhodes/">					        GitHub		</a> 
+	Gui, Add, Link,ys y+-35 section, 	<a href="https://github.com/alexofrhodes/">GitHub </a> 
 	Gui, Add, Link,xs, 			        <a href="https://alexofrhodes.github.io/">							Blog		</a> 
 	Gui, Add, Link,xs, 			        <a href="https://www.youtube.com/channel/UC5QH3fn1zjx0aUjRER_rOjg">	YouTube		</a> 
 
