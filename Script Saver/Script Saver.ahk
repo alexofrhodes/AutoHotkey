@@ -45,11 +45,12 @@ CreateGui:
     gui, add, Checkbox, ys gSaveSettings vChEditAfterSave, Edit after save  
 
     Gui , Add, Button, w200 xs y+20 section gSaveScript, Save Script
+    gui, add, button, ys gOpenFolder, Folder
 
 	;AUTHOR links
-	Gui, Add, Link,ys y+-35 section, 	<a href="https://github.com/alexofrhodes/">GitHub </a> 
-	Gui, Add, Link,xs, 			        <a href="https://alexofrhodes.github.io/">							Blog		</a> 
-	Gui, Add, Link,xs, 			        <a href="https://www.youtube.com/channel/UC5QH3fn1zjx0aUjRER_rOjg">	YouTube		</a> 
+	Gui, Add, Link,xs y+20 section, 	<a href="https://github.com/alexofrhodes/">GitHub </a> 
+	Gui, Add, Link,ys, <a href="https://alexofrhodes.github.io/">Blog</a> 
+	Gui, Add, Link,ys, 			        <a href="https://www.youtube.com/channel/UC5QH3fn1zjx0aUjRER_rOjg">	YouTube		</a> 
 
     iniread, DefaultPath, Config.ini, Settings, Path
     iniread, DefaultExtension, Config.ini, Settings, Extension
@@ -67,6 +68,11 @@ CreateGui:
     Gui , Show, , Script Saver 
     Return
 }
+
+OpenFolder: 
+    Gui, Submit, NoHide ;Get the new type.
+    Run, %TargetPath%
+Return
 
 GuiEscape:
 GuiClose:
