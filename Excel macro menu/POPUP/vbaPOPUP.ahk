@@ -15,14 +15,18 @@ setWorkingDir, % a_scriptDir
 	ezMenu will create a menu from the vba.menu file
 	info on ezMenu at https://github.com/davebrny/ezMenu
 */
+#include ini-editor.ahk
 
-WorkbookName:="'vbArc-Addin.xlsm'!"    
-MenuFile:=	 A_ScriptDir . "\vba.menu" 
+LoadOptions:
+	IniRead, myHotkey, config.ini, Settings, myHotkey
+	IniRead, WorkbookName, config.ini, Settings, WorkbookName
+	IniRead, MenuFile, config.ini, Settings, MenuFile
+	Hotkey, %myHotkey%,Start
+Return
 
-^+!H:: ;	ctrl + shift + alt + H
-
-ezMenu("vbaMenu", MenuFile)
-Reload ;otherwise throws error (menu item has no parent)
+Start: 
+    ezMenu("vbaMenu", MenuFile)
+    Reload ;otherwise throws error (menu item has no parent)
 return
 
 RunExcelMacro:
