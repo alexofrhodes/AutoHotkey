@@ -174,22 +174,20 @@ y:=55
 					line:=SubStr(line, 1, Position - 1)
 				line:=trim(line)
 				
-				;How many controls to allow per column
-				LimitReached:= ItemsPerColumn - counter ;Mod(counter, ItemsPerColumn)
-				; msgbox,,,%counter%`n%ItemsPerColumn%`n%LimitReached%
 				;alternatively to force new column leave empty line (resets counter for the rest of the controls in the new column)
 				if line =
 				{
 					; MsgBox, ,,1
 					; Gui, Add, Text,ys
-					HB_Button.Push( New HB_Flat_Rounded_Button_Type_1( x += w+5 , y := 100 , w := 200 , h := 35 , Button_Color := "C1C1C1" , Button_Background_Color := "3A3C40" , Text := line , Font := "Arial" , Font_Size:= 16 " Bold" , Font_Color_Top := "FFFFFF" , Font_Color_Bottom := "111111" , Window := "1" , Label := "RunExcelMacro" , Default_Button := 1 , Roundness:=8 ) )
+					; HB_Button.Push( New HB_Flat_Rounded_Button_Type_1( x += w+5 , y := 100 , w := 200 , h := 35 , Button_Color := "C1C1C1" , Button_Background_Color := "3A3C40" , Text := line , Font := "Arial" , Font_Size:= 16 " Bold" , Font_Color_Top := "FFFFFF" , Font_Color_Bottom := "111111" , Window := "1" , Label := "RunExcelMacro" , Default_Button := 1 , Roundness:=8 ) )
+					x += w+5
+					y :=100 - h-10
 					counter:=1
 				;or if controls placed in active column reached set limit, start new column
-				}else if (%LimitReached%=0){
+				}else if (counter = ItemsPerColumn){
 					; MsgBox, ,,2
 					; Gui, Add, Text,ys 
 					HB_Button.Push( New HB_Flat_Rounded_Button_Type_1( x += w+5 , y :=100 , w := 200 , h := 35 , Button_Color := "C1C1C1" , Button_Background_Color := "3A3C40" , Text := line , Font := "Arial" , Font_Size:= 16 " Bold" , Font_Color_Top := "FFFFFF" , Font_Color_Bottom := "111111" , Window := "1" , Label := "RunExcelMacro" , Default_Button := 1 , Roundness:=8 ) )
-					
 					counter:=1
 				}else{
 				; MsgBox, ,,3

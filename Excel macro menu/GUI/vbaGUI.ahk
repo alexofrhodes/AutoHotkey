@@ -172,18 +172,15 @@ LoadMenu:
 					line:=SubStr(line, 1, Position - 1)
 				line:=trim(line)
 				
-				;How many controls to allow per column
-				LimitReached:=Mod(counter, ItemsPerColumn)
-				
 				;alternatively to force new column leave empty line (resets counter for the rest of the controls in the new column)
 				if line =
 				{
 					Gui, Add, Text,ys
 					counter:=0
-					continue
 				;or if controls placed in active column reached set limit, start new column
-				}else if (%LimitReached%=0)
+				}else if (counter=ItemsPerColumn)
 				{
+					counter:=0
 					Gui, Add, Text,ys 
 				}
 				
