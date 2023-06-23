@@ -221,14 +221,14 @@ class Dock
 								, Client.h) 					;height
 				}
 
-				If (via = "client")
-				{
-					Return this.MoveWindow(self.hwnd.Host	;hwnd
-								, Client.x	  				;x
-								, Client.y + Client.h   	;y
-								, Host.w					;width
-								, Host.h)	   				;height			
-				}
+				; If (via = "client")
+				; {
+				; 	Return this.MoveWindow(self.hwnd.Host	;hwnd
+				; 				, Client.x	  				;x
+				; 				, Client.y + Client.h   	;y
+				; 				, Host.w					;width
+				; 				, Host.h)	   				;height			
+				; }
 			}
 
 			If InStr(self.pos, "Bottom")
@@ -242,14 +242,14 @@ class Dock
 								, Client.h)	 					;height
 				}
 
-				If (via = "client")
-				{
-					Return this.MoveWindow(self.hwnd.Host	;hwnd
-								, Client.x	  				;x
-								, Client.y - Host.h 		;y
-								, Host.w					;width
-								, Host.h)	   				;height
-				}
+				; If (via = "client")
+				; {
+				; 	Return this.MoveWindow(self.hwnd.Host	;hwnd
+				; 				, Client.x	  				;x
+				; 				, Client.y - Host.h 		;y
+				; 				, Host.w					;width
+				; 				, Host.h)	   				;height
+				; }
 			}
 
 			If InStr(self.pos, "Right")
@@ -263,14 +263,14 @@ class Dock
 								, Client.h)	 					;height	
 				}
 
-				If (via = "client")
-				{
-					Return this.MoveWindow(self.hwnd.Host	;hwnd
-								, Client.x - Host.w 		;x
-								, Client.y	  				;y
-								, Host.w					;width
-								, Host.h)	   				;height
-				}
+				; If (via = "client")
+				; {
+				; 	Return this.MoveWindow(self.hwnd.Host	;hwnd
+				; 				, Client.x - Host.w 		;x
+				; 				, Client.y	  				;y
+				; 				, Host.w					;width
+				; 				, Host.h)	   				;height
+				; }
 			}
 
 			If InStr(self.pos, "Left")
@@ -284,14 +284,14 @@ class Dock
 								, Client.h)	 					;height	
 				}
 
-				If (via = "client")
-				{
-					Return this.MoveWindow(self.hwnd.Host	   	;hwnd
-								, Client.x + Client.w   		;x
-								, Client.y	  					;y
-								, Host.w						;width
-								, Host.h)	   					;height	
-				}
+				; If (via = "client")
+				; {
+				; 	Return this.MoveWindow(self.hwnd.Host	   	;hwnd
+				; 				, Client.x + Client.w   		;x
+				; 				, Client.y	  					;y
+				; 				, Host.w						;width
+				; 				, Host.h)	   					;height	
+				; }
 			}
 
 
@@ -307,14 +307,14 @@ class Dock
 									, Client.h)	 					;height	
 					}
 	
-					If (via = "client")
-					{
-						Return this.MoveWindow(self.hwnd.Host	   		;hwnd
-									, Client.x 	-6						;x
-									, Client.y  +Client.H - Host.h	+6 	;y
-									, Host.w							;width
-									, Host.h)	   						;height	
-					}
+					; If (via = "client")
+					; {
+					; 	Return this.MoveWindow(self.hwnd.Host	   		;hwnd
+					; 				, Client.x 	-6						;x
+					; 				, Client.y  +Client.H - Host.h	+6 	;y
+					; 				, Host.w							;width
+					; 				, Host.h)	   						;height	
+					; }
 				}
 	
 			;Bottom Right
@@ -329,14 +329,14 @@ class Dock
 									, Client.h)	 					;height	
 					}
 	
-					If (via = "client")
-					{
-						Return this.MoveWindow(self.hwnd.Host	   		;hwnd
-									, Client.x +client.w - host.w	+6	;x
-									, Client.y  +Client.H - Host.h	+6 	;y
-									, Host.w							;width
-									, Host.h)	   						;height	
-					}
+					; If (via = "client")
+					; {
+					; 	Return this.MoveWindow(self.hwnd.Host	   		;hwnd
+					; 				, Client.x +client.w - host.w	+6	;x
+					; 				, Client.y  +Client.H - Host.h	+6 	;y
+					; 				, Host.w							;width
+					; 				, Host.h)	   						;height	
+					; }
 				}
 
 			;Top Left
@@ -351,14 +351,14 @@ class Dock
 									, Client.h)	 				;height	
 					}
 	
-					If (via = "client")
-					{
-						Return this.MoveWindow(self.hwnd.Host	;hwnd
-									, Client.x 	-6				;x
-									, Client.y 	 				;y
-									, Host.w					;width
-									, Host.h)	   				;height	
-					}
+					; If (via = "client")
+					; {
+					; 	Return this.MoveWindow(self.hwnd.Host	;hwnd
+					; 				, Client.x 	-6				;x
+					; 				, Client.y 	 				;y
+					; 				, Host.w					;width
+					; 				, Host.h)	   				;height	
+					; }
 				}
 
 			;Top Right
@@ -373,14 +373,14 @@ class Dock
 									, Client.h)	 					;height	
 					}
 	
-					If (via = "client")
-					{
-						Return this.MoveWindow(self.hwnd.Host	   		;hwnd
-									, Client.x +client.w - host.w	+6	;x
-									, Client.y  					 	;y
-									, Host.w							;width
-									, Host.h)	   						;height	
-					}
+					; If (via = "client")
+					; {
+					; 	Return this.MoveWindow(self.hwnd.Host	   		;hwnd
+					; 				, Client.x +client.w - host.w	+6	;x
+					; 				, Client.y  					 	;y
+					; 				, Host.w							;width
+					; 				, Host.h)	   						;height	
+					; }
 				}
 
 		}
