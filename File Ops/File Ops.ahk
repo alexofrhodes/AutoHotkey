@@ -108,6 +108,10 @@ global CommandList :=
     }
 
     MyGui := Gui()
+    mygui.SetFont("q5")
+
+    global SB_Default := ""   
+    SB := MyGui.AddStatusBar(, SB_Default)
 
     ; TARGET FILES FROM
     {        
@@ -136,53 +140,52 @@ global CommandList :=
         global myFolders := []
         myFolders := StrSplit(IniRead(A_ScriptDir . "\config.ini", "Settings", "myFolders", A_ScriptDir . "\"), "|")
 
-        oFolderPicker := MyGui.AddComboBox("xm section w500", myFolders)
+        oFolderPicker := MyGui.AddComboBox("xm section w500 ", myFolders)
         oFolderPicker.OnEvent("Change",ListFiles)
         ; oFolderPicker.Focus
 
-        mygui.SetFont("bold s12")
-
         AddBtn := MyGui.AddButton("-Tabstop ys section h22 w22", "+")
         AddBtn.OnEvent("Click", AddBtn_Click)  
+        AddBtn.SetFont("bold s12 q5")
 
         RemoveBtn := MyGui.AddButton("-Tabstop ys h22 w22", "-")
         RemoveBtn.OnEvent("Click", RemoveBtn_Click)  
-
-        mygui.SetFont()
+        RemoveBtn.SetFont("bold s12 q5")
+    
     }
     ; FILTER
     {
-        mygui.SetFont("s9")
-
         mygui.AddText("xm y+10 section","Filter")
         oFilter := mygui.AddEdit("ys-5 w150", "*")
         oFilter.OnEvent("Change", ListFiles)
+        ofilter.SetFont("s9 ")
     }
     ; COMMANDS                   
     {
         mygui.AddText("ys","Commands")
-        oCommands := mygui.AddDropDownList("ys-3 w190", CommandList)
-                                            
-        oRunner := MyGui.AddButton("ys-5 h22", "RUN")
+        oCommands := mygui.AddDropDownList("ys-3 w190 Backgroundffffff  ", CommandList) 
+        
+        oRunner := MyGui.AddButton("ys-5 h22 ", "&R U N")
         orunner.OnEvent("Click", RunCommand)
-        mygui.SetFont()
+        
     }
+
+    ; PROGRESSBAR
+
+    myProgressBar := mygui.AddProgress("xs section w450 Range0-10 smooth" )   ;Vertical
+    myProgressBar.value := 0
+    mygui.AddText("ys+1 x+10","%")
+
     ; LISTVIEW
     {
+
         ; global LVS_EX_TRANSPARENTBKGND := "LV0x00400000"
-        ; global LVS_EX_LABELTIP         := "LV0x00004000"  ; listview unfolds partly hidden labels if it does not have infotip text
-        ; global LVS_EX_BORDERSELECT     := "LV0x00008000"  ; border selection style instead of highlight
-        ; global LVS_EX_INFOTIP          := "LV0x00000400"  ; listview does InfoTips for you
-        ; global LVS_EX_HEADERINALLVIEWS := "0x02000000"    ; Enables// Display column header in all view modes
-
-        oListView := myGui.AddListView(" xm w500 section R10", ["FILE"]) 
-        oListView.Opt("+Grid +multi ")
-        ; allow edit   WantF2 -ReadOnly
-
-        ;LV.ModifyCol()     ;Auto-sizes all columns to fit their contents.
+        oListView := myGui.AddListView(" xm w500 section R11", ["FILE"]) 
+        oListView.Opt("+Grid +multi +BackgroundF2F9F1")   ;Background FAFDD6 FFFCEF 
+        ; WantF2 -ReadOnly   ;allow edit  
+        ; LV.ModifyCol()     ;Auto-sizes all columns to fit their contents.
 
         ; oListView.OnEvent("ColClick", LV_SortArrow)
-
 
         ;TODO drag drop rearrange
 
@@ -210,15 +213,7 @@ global CommandList :=
     ; LOAD OPTIONS / FILES
     {
         LoadOptions
-
-        if (oByFolder.Value=true)
-            ListFiles
-        else if (oByDragDrop.value = true)
-            oFolderPicker.text := "Drag n Drop"
-        else if (oByFileExplorer.value = true){
-            oFolderPicker.text := "Targeting selected files in File Explorer"
-            controlhide oListView
-        }
+        ListFiles
     }
     ; FINALIZE GUI
     {   
@@ -232,27 +227,22 @@ global CommandList :=
         OnMessage(WM_MOUSEMOVE , OnMouseEvent)
         OnMessage(WM_MOUSELEAVE, OnMouseEvent)
 
-        myProgressBar := mygui.AddProgress("ys+10 section Vertical h160")
-        mygui.AddText("xs+2","%")
+        imageGithub          := MyGui.AddPicture( "ys+25 x+25 w28 h28 SECTION", "icons\github.ico").OnEvent("Click",OpenLinkGithub )
+        imageBlog            := MyGui.AddPicture( "Xs         w28 h28", "icons\blog.ico").OnEvent("Click",OpenLinkBlog )
+        imageEmail           := MyGui.AddPicture( "Xs         w28 h28", "icons\gmail.ico").OnEvent("Click",OpenLinkEmail )
+        imageBuyMeACoffee    := MyGui.AddPicture( "Xs         w28 h28", "icons\BuyMeACoffee.ico").OnEvent("Click",OpenLinkBuyMeACoffee )
+        imageYouTube         := MyGui.AddPicture( "Xs         w28 h28", "icons\YouTube.ico").OnEvent("Click",OpenLinkYoutube )
 
-        imageGithub          := MyGui.AddPicture( "ys w32 h32 SECTION", "icons\github.ico").OnEvent("Click",OpenLinkGithub )
-        imageBlog            := MyGui.AddPicture( "Xs w32 h32", "icons\blog.ico").OnEvent("Click",OpenLinkBlog )
-        imageEmail           := MyGui.AddPicture( "Xs w32 h32", "icons\gmail.ico").OnEvent("Click",OpenLinkEmail )
-        imageBuyMeACoffee    := MyGui.AddPicture( "Xs w32 h32", "icons\BuyMeACoffee.ico").OnEvent("Click",OpenLinkBuyMeACoffee )
-        imageYouTube         := MyGui.AddPicture( "Xs w32 h32", "icons\YouTube.ico").OnEvent("Click",OpenLinkYoutube )
-
-        global SB_Default := ""   ;"Greetings from Rhodes!"
-        SB := MyGui.AddStatusBar(, SB_Default)
-
-        myGui.Opt("Resize +AlwaysOnTop -DPIScale ")    ; + +MinSize
+        myGui.Opt("Resize +AlwaysOnTop -DPIScale " )    ; + +MinSize
+        mygui.BackColor := "FFFFFF"
         if (GuiX > 0){
-            MyGui.Show("x" GuiX "y" GuiY "autosize")
+            MyGui.Show("x" GuiX "y" GuiY "autosize" )
             if oByFileExplorer.value=true 
-                mygui.Move(,,,200)
+                mygui.Move(,,,220)
         }else{
             mygui.show("AutoSize center")
         }
-        return
+        
     }
 }
 
@@ -272,12 +262,13 @@ global CommandList :=
             SB_Set("message complete")
     }
 
-    SB_Set(msg, MessageAlert:=false){
+    SB_Set(msg, MessageAlert:=false, PlaySound:=false){
         global SB_Default := msg
-        sb.text := msg
+        SB.text := msg
         if messageAlert
             MsgBox(msg)
-        else SoundBeep
+        else if PlaySound
+            SoundBeep
     }
 
     TxtSplitVbaProcedures(*){
@@ -390,27 +381,39 @@ global CommandList :=
     ListFiles(*){
         oListView.Delete()
         if  (oByFolder.value = true){
+            oFolderPicker.enabled := true
             Loop Files, oFolderPicker.text . oFilter.Text
                 oListView.Add(,A_LoopFileName)
             controlshow oListView
-            mygui.Move(,,,440) 
+            mygui.Move(,,,460) 
+
         }else if (oByDragDrop.value = true){
-            oFolderPicker.text := "Drag n Drop"
+            oFolderPicker.Enabled := false  
             ListViewContent := StrSplit(IniRead(A_ScriptDir . "\config.ini", "Settings", "DragDropList"), "|")
             for each, item in ListViewContent
                 oListView.Add(,item)
             controlshow oListView
-            mygui.Move(,,,440) 
+            mygui.Move(,,,460) 
         }else if (oByFileExplorer.value = true){
-            oFolderPicker.text := "Targeting selected files in File Explorer"
+            oFolderPicker.Enabled := false 
             controlhide oListView
-            mygui.Move(,,,200) 
+            mygui.Move(,,,220) 
         }
+        setStatusBarMessage
         ; TODO remove the following test
         ; WinGetPos(,,,&H,mygui.Hwnd) 
         ; MsgBox(H)
     }
     
+    setStatusBarMessage(*){
+        if  (oByFolder.value = true)
+            SB_Set("Select files from ListView")
+        else if (oByDragDrop.value = true)
+            SB_Set("Drag n Drop Baby")
+        if (oByFileExplorer.value = true)
+            SB_Set("Targeting selected files in File Explorer")
+    }
+
     GetTarget(*){
         global SelectedFiles := []  ;""
         if (oByFileExplorer.value=true){
@@ -727,13 +730,8 @@ global CommandList :=
         oByFolder.value         := IniRead(A_ScriptDir . "\config.ini", "Settings", "byFolder",True)
         oByDragDrop.value       := IniRead(A_ScriptDir . "\config.ini", "Settings", "byDragDrop",False)
         oByFileExplorer.value   := IniRead(A_ScriptDir . "\config.ini", "Settings", "byFileExplorer",False)
-
-        if (oByDragDrop.Value = true)
-            {
-                ListViewContent := StrSplit(IniRead(A_ScriptDir . "\config.ini", "Settings", "DragDropList"), "|")
-                for each, item in ListViewContent
-                    oListView.Add(,item)
-            }
+        
+        setStatusBarMessage
         
         try
             oCommands.value            := IniRead(A_ScriptDir . "\config.ini", "Settings", "LastCommand",0)
@@ -742,7 +740,15 @@ global CommandList :=
 
         global GuiX                    := IniRead(A_ScriptDir . "\config.ini", "Settings", "GuiX",0)
         global GuiY                    := IniRead(A_ScriptDir . "\config.ini", "Settings", "GuiY",0)
-
+        
+        if (oByFolder.Value = false)
+            oFolderPicker.Enabled := false
+        ;     {
+        ;         ListViewContent := StrSplit(IniRead(A_ScriptDir . "\config.ini", "Settings", "DragDropList"), "|")
+        ;         for each, item in ListViewContent
+        ;             oListView.Add(,item)
+                
+        ;     }
     }
 
     SaveOptions(*){
@@ -807,15 +813,14 @@ global CommandList :=
         if (SelectedFolder = "")
             return
         SelectedFolder .= "\"
-        isNewEntry := true
         for index, item in myFolders
             if (item = SelectedFolder)
                 return
         myFolders.Push(SelectedFolder)
-        saveMyFolders
         oFolderPicker.Add([SelectedFolder])         ; Update ComboBox items
         oFolderPicker.value := myFolders.Length     ; Set selected item = last
         mygui.Submit(false)
+        saveMyFolders
         ListFiles
     }
     RemoveBtn_Click(*)
@@ -873,3 +878,6 @@ global CommandList :=
     }
     #HotIf   
 }
+
+
+
