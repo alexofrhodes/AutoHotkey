@@ -257,9 +257,11 @@ global CommandList :=
                 Sleep(200)
                 if !FileExist(TargetFile) 
                     continue
+                msg .= "`n" TargetFile
                 myProgressBar.value += 1
             }        
             SB_Set("message complete")
+            MsgBox(msg)
     }
 
     SB_Set(msg, MessageAlert:=false, PlaySound:=false){
@@ -272,7 +274,7 @@ global CommandList :=
     }
 
     TxtSplitVbaProcedures(*){
-        TxtRegexExport("mi)((Public|Private|Friend)\s){0,1}(Static\s){0,1}(Function|Sub|Property\sGet|Property\sLet|Property\sSet)\s{0,1}[a-zA-Z0-9_]*?\s{0,1}\([\S\s]*?End\s(Function|Sub|Property)")
+        TxtRegexExport("mi)((Public|Private|Friend)\s){0,1}(Static\s){0,1}(Function|Sub|Property\sGet|Property\sLet|Property\sSet)\s{0,1}([a-zA-Z0-9_]*?)\s{0,1}\([\S\s]*?End\s(Function|Sub|Property)")
     }
 
     TxtRegexExport(RegexPattern, MergeThem:=False, sep := "`n`r"){  
@@ -301,7 +303,12 @@ global CommandList :=
             while (RegExMatch(filecontent, RegexPattern, &match, n)) {
                 str:=match[]
                 out.Push(str)
-                outputFileName := outputFolder "\" TimeStamp " " out.Length ".txt"
+                foundName:= match.5
+                if !(foundName="")
+                    outputFileName :=  outputFolder "\" foundName ".txt"
+                else
+                    outputFileName := outputFolder "\" TimeStamp " " out.Length ".txt"
+                
                 if !MergeThem
                     FileAppend("`n" str, outputFileName,"`n UTF-8")
                 n := match.pos + strlen(str)                        
@@ -379,6 +386,13 @@ global CommandList :=
     } 
 
     ListFiles(*){
+        EM_SETSEL := 0x00B1
+        if (oFilter.Text = ""){
+            ofilter.text := "*"
+            SendMessage(EM_SETSEL, 1, 1,, "ahk_id" ofilter.Hwnd)
+;                                  ^  ^            
+;                           startPos, endPos                                        
+        }
         oListView.Delete()
         if  (oByFolder.value = true){
             oFolderPicker.enabled := true
@@ -390,8 +404,12 @@ global CommandList :=
         }else if (oByDragDrop.value = true){
             oFolderPicker.Enabled := false  
             ListViewContent := StrSplit(IniRead(A_ScriptDir . "\config.ini", "Settings", "DragDropList"), "|")
-            for each, item in ListViewContent
-                oListView.Add(,item)
+            if (ListViewContent.Length > 0)
+                for index, item in ListViewContent
+                    if FileExist(item)
+                        if (RegExMatch(item, "i)" StrReplace(oFilter.Text,"*",".*")))
+                            oListView.Add(,item)                              
+    
             controlshow oListView
             mygui.Move(,,,460) 
         }else if (oByFileExplorer.value = true){
@@ -405,6 +423,10 @@ global CommandList :=
         ; MsgBox(H)
     }
     
+    RegExEscape(text) {
+        return RegExReplace(text, "[.*+?^$|(){}[\]\\]", "`$&")
+    }
+
     setStatusBarMessage(*){
         if  (oByFolder.value = true)
             SB_Set("Select files from ListView")
@@ -635,28 +657,10 @@ global CommandList :=
 
     OnDropFiles(GuiObj, GuiCtrlObj, FileArray, X, Y) {
         if oByDragDrop{
-            ListViewContent := [] 
-            global joinedList := ""
+            ofilter.text := "*"
             for index, item in FileArray
-                {
-                    ListViewContent.push([item])
-                    joinedList .= item    
-                    oListView.Add(,item)
-                    if (index < FileArray.Length)
-                        joinedList .= "|"
-                }
-            ; FileList := Sort(FileList)
-            
-            ; Replace "||" with "|"
-            joinedList := StrReplace(joinedList, "||", "|")
-            
-            ; Remove trailing "|" if present
-            lastChar := SubStr(joinedList, -1)
-            if (lastChar = "|")
-                joinedList := SubStr(joinedList, 1, -1)
-            try{
-                IniWrite(joinedList, A_ScriptDir . "\config.ini", "Settings", "DragDropList")
-            }
+                oListView.Add(,item)
+            SaveDragDropList
         }
     }
     
@@ -762,8 +766,8 @@ global CommandList :=
         IniWrite(oByDragDrop.value,         A_ScriptDir . "\config.ini", "Settings", "byDragDrop")
         IniWrite(oByFileExplorer.value,     A_ScriptDir . "\config.ini", "Settings", "ByFileExplorer")
 
-        if (oByDragDrop.Value = true)
-            SaveDragDropList
+        ; if (oByDragDrop.Value = true)
+        ;     SaveDragDropList
         
         IniWrite(oCommands.value, A_ScriptDir . "\config.ini", "Settings", "LastCommand")
 
