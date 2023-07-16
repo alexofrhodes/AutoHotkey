@@ -235,8 +235,8 @@ global CommandList :=
 
         myGui.Opt("Resize +AlwaysOnTop -DPIScale " )    ; + +MinSize
         mygui.BackColor := "FFFFFF"
-        if (GuiX > 0){
-            MyGui.Show("x" GuiX "y" GuiY "autosize" )
+       if (GuiX > 0){
+             MyGui.Show("x" GuiX "y" GuiY "autosize" )
             if oByFileExplorer.value=true 
                 mygui.Move(,,,220)
         }else{
@@ -563,7 +563,7 @@ global CommandList :=
         Return result
     }
 
-    ;function: copy selection to clipboard to var
+    ;f;unction: copy selection to clipboard to var
     ClipToVar() {
         cliptemp := ClipboardAll() ;backup
         A_Clipboard := ""
@@ -597,7 +597,7 @@ global CommandList :=
     }
 }
 
-; === EVENTS 
+;=== EVENTS 
 {
 
     OnMouseEvent(wp, lp, msg, hwnd) { ; 
