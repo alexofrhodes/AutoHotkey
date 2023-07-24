@@ -139,12 +139,15 @@ SimulateTyping(*){
     SetKeyDelay KeyDelay.text ;50
     mygui.Hide
 
+    WinActivate WinExist("A")
+
     if chUseClipboard.value = true
         txt :=  A_Clipboard
     else
         txt := Fileread(oFilePicker.Text, "`n")
 
     SendText(txt)
+
     mygui.show
 }
 
