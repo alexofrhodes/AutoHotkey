@@ -105,6 +105,8 @@ SetWorkingDir A_ScriptDir
     imageYouTube         := MyGui.AddPicture( "ys w24 h24", "icons\YouTube.ico").OnEvent("Click",OpenLinkYoutube )
 
     myGui.Add("Button", "ys x+50 w80 section", "Type away").OnEvent("click",SimulateTyping)
+    chUseClipboard := mygui.add("CheckBox","xs","Use Clipboard")
+    chUseClipboard.OnEvent("Click", chUseClipboardClicked)  
 
     mygui.AddText("ys+3", "delay ms")
     KeyDelay := MyGui.AddComboBox("ys+2 w50",[10,20,30,40,50,60,70,80,90,100])
@@ -113,7 +115,7 @@ SetWorkingDir A_ScriptDir
     myGui.Add("Button", "ys w80", "Edit File").OnEvent("click",EditFile(*) =>run(oFilePicker.text))
     myGui.Add("Button", "ys w80", "Edit Ini").OnEvent("click",EditIni(*) =>run("config.ini"))
 
-    myGui.Opt("Resize +AlwaysOnTop -DPIScale -MaximizeBox " )    ; + +MinSize
+    myGui.Opt("Resize +AlwaysOnTop -DPIScale -MaximizeBox " )    ; +MinSize
     mygui.BackColor := "FFFFFF"
 
     LoadOptions
@@ -128,11 +130,20 @@ SetWorkingDir A_ScriptDir
 
 }
 
+chUseClipboardClicked(*){
+    oFilePicker.Enabled := !chUseClipboard.value
+}
+
 SimulateTyping(*){
     SendMode("event")
     SetKeyDelay KeyDelay.text ;50
     mygui.Hide
-    txt := Fileread(oFilePicker.Text, "`n")
+
+    if chUseClipboard.value = true
+        txt :=  A_Clipboard
+    else
+        txt := Fileread(oFilePicker.Text, "`n")
+
     SendText(txt)
     mygui.show
 }
