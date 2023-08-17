@@ -64,7 +64,6 @@ AHK_NOTIFYICON(wParam, lParam)
 
 ;Load Configuration
 IniRead, myHotkey, config.ini, Settings, myHotkey
-IniRead, WorkbookName, config.ini, Settings, WorkbookName
 IniRead, MenuFile, config.ini, Settings, MenuFile
 IniRead, ItemsPerColumn, config.ini, Settings, ItemsPerColumn
 Hotkey, %myHotkey%,Start
@@ -265,13 +264,15 @@ RunExcelMacro:
 	}
 	;MsgBox, 64,, Excel obtained successfully!   ;for debugging purposes
 	
+	IniRead, WorkbookName, config.ini, Settings, WorkbookName
+
 	;a space is allowed in the following format: [&1] MacroName
 	;to allow a GUI accelerator between the braces eg. [accelerator]
 	if instr(A_GuiControl, A_Space){
 		StringSplit, Procedure, A_GuiControl, %A_Space%
-		macro:= WorkbookName . "!" . Procedure2 
+		macro:= "'" . WorkbookName . "'" . "!" . Procedure2 
 	}else{
-		macro:= WorkbookName . "!" . A_GuiControl
+		macro:= "'" . WorkbookName . "'" . "!" . A_GuiControl
 	}
 	
 	try {
@@ -282,6 +283,7 @@ RunExcelMacro:
 	
 	return
 }
+
 
 Excel_Get(WinTitle:="ahk_class XLMAIN", Excel7#:=1) 
 {
