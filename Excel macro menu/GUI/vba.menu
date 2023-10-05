@@ -121,24 +121,44 @@ Userforms
 	uShow_Skeleton
 	uShow_SnippetsVBE
 Bookmarks
-	BmSave1
-	BmSave2
-	BmSave3
-	BmSave4
-	BmSave5
-	BmSave6
-	BmSave7
-	BmSave8
-	BmSave9
-	BmSave10
-	
-	bmload1
-	bmload2
-	bmload3
-	bmload4
-	bmload5
-	bmload6
-	bmload7
-	bmload8
-	bmload9
-	bmload10
+	BmLoad1
+	BmLoad2
+	BmLoad3
+	BmLoad4
+	BmLoad5
+	BmLoad6
+	BmLoad7
+	BmLoad8
+	BmLoad9
+	BmLoad10
+	BmLoad11
+	BmLoad12
+	BmLoad13
+	BmLoad14
+	BmLoad15
+	BmLoad16
+	BmLoad17
+	BmLoad18
+	BmLoad19
+	BmLoad20
+
+	BmLoad1
+	BmLoad2
+	BmLoad3
+	BmLoad4
+	BmLoad5
+	BmLoad6
+	BmLoad7
+	BmLoad8
+	BmLoad9
+	BmLoad10
+	BmLoad11
+	BmLoad12
+	BmLoad13
+	BmLoad14
+	BmLoad15
+	BmLoad16
+	BmLoad17
+	BmLoad18
+	BmLoad19
+	BmLoad20

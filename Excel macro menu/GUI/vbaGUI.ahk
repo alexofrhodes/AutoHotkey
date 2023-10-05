@@ -177,6 +177,7 @@ LoadMenu:
 				{
 					Gui, Add, Text,ys
 					counter:=0
+					continue
 				;or if controls placed in active column reached set limit, start new column
 				}else if (counter=ItemsPerColumn)
 				{

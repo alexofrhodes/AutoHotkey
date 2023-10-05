@@ -47,7 +47,7 @@ SetWorkingDir, %A_ScriptDir%
 pToken:=Gdip_Startup()
 
 ;Custom Tray Icon
-I_Icon = %A_WorkingDir%\vbaGUI.ico ;dAKirby309 (Michael) at https://icon-icons.com/icon/excel-mac/23559
+I_Icon = %A_WorkingDir%\vbaGUIblack.ico ;dAKirby309 (Michael) at https://icon-icons.com/icon/excel-mac/23559
 IfExist, %I_Icon%
 	Menu, Tray, Icon, %I_Icon%
 
@@ -163,7 +163,7 @@ y:=55
 				FirstCharacter:= substr(line,1,1)
 				if FirstCharacter in !,.
 					continue
-				if not (firstCharacter=A_Tab)
+				if not (firstCharacter=A_Tab) && (trim(line)<>"")
 					Break
 				Position:= InStr(line, ";")
 				if Position>0
@@ -181,7 +181,8 @@ y:=55
 					; HB_Button.Push( New HB_Flat_Rounded_Button_Type_1( x += w+5 , y := 100 , w := 200 , h := 35 , Button_Color := "C1C1C1" , Button_Background_Color := "3A3C40" , Text := line , Font := "Arial" , Font_Size:= 16 " Bold" , Font_Color_Top := "FFFFFF" , Font_Color_Bottom := "111111" , Window := "1" , Label := "RunExcelMacro" , Default_Button := 1 , Roundness:=8 ) )
 					x += w+5
 					y :=100 - h-10
-					counter:=1
+					counter:=0
+					continue
 				;or if controls placed in active column reached set limit, start new column
 				}else if (counter = ItemsPerColumn){
 					; MsgBox, ,,2
