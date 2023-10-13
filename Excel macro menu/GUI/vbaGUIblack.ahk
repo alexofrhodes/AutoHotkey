@@ -63,10 +63,22 @@ AHK_NOTIFYICON(wParam, lParam)
 }
 
 ;Load Configuration
-IniRead, myHotkey, config.ini, Settings, myHotkey
-IniRead, MenuFile, config.ini, Settings, MenuFile
-IniRead, ItemsPerColumn, config.ini, Settings, ItemsPerColumn
-Hotkey, %myHotkey%,Start
+LoadOptions:
+    IniRead, myHotkey, config.ini, Settings, myHotkey
+    ; IniRead, WorkbookName, config.ini, Settings, WorkbookName    ;moved to runExcelMacro
+    IniRead, MenuFile, config.ini, Settings, MenuFile
+    IniRead, ItemsPerColumn, config.ini, Settings, ItemsPerColumn
+    Hotkey, %myHotkey%,Start
+    ; IniRead, fontSize, config.ini, Settings, fontSize
+    ; Gui,Font, s%fontSize%, Arial
+    
+    IniRead, xPos, config.ini, Settings, xPos, 100
+    IniRead, yPos, config.ini, Settings, yPos, 100
+
+	if %xPos% = xPos
+		xPos = 100
+	if %yPos% = yPos
+		yPos = 100
 
 return ;if you comment this out then the gui will show at startup (hotkey still works)
 
@@ -109,8 +121,9 @@ ChooseGui:
 	
 	if (ChooseGui="") 
 		ChooseGui:=0
+	Else
+		gosub SavePos
 
-	
 	Gui, Submit
 	Gui, Destroy
 
@@ -128,9 +141,9 @@ ChooseGui:
 	Gui,1:Color,3A3C40,353738
 	
 	Gui, Add, DropDownList, section choose%ChooseGui% AltSubmit gChooseGui vChooseGui, %Guis%
-
-	HB_Button.Push( New HB_Flat_Rounded_Button_Type_1( x:= 10 , y:= 50 , w := 90 , h := 35 , Button_Color := "C1C1C1" , Button_Background_Color := "3A3C40" , Text := "Edit Menu" , Font := "Arial" , Font_Size:= 16 " Bold" , Font_Color_Top := "A866E2" , Font_Color_Bottom := "111111" , Window := "1" , Label := "EditFile" , Default_Button := 1 , Roundness:=8 ) )
-	HB_Button.Push( New HB_Flat_Rounded_Button_Type_1( x +x +w , y , w  , h , Button_Color := "C1C1C1" , Button_Background_Color , Text := "Options" , Font := "Segoe UI" , Font_Size:= 16 " Bold" , Font_Color_Top := "A866E2" , Font_Color_Bottom := "111111" , Window := "1" , Label := "MenuSettings" , Default_Button := 1 , Roundness:=8 ) )
+	
+	HB_Button.Push( New HB_Flat_Rounded_Button_Type_1( x:= 10 , y:= 50 , w := 90 , h := 35, Button_Color := "C1C1C1" , Button_Background_Color , Text := "Options" , Font := "Segoe UI" , Font_Size:= 16 " Bold" , Font_Color_Top := "A866E2" , Font_Color_Bottom := "111111" , Window := "1" , Label := "MenuSettings" , Default_Button := 1 , Roundness:=8 ) )
+	HB_Button.Push( New HB_Flat_Rounded_Button_Type_1( x +x +w , y , w  , h , Button_Color := "C1C1C1" , Button_Background_Color := "3A3C40" , Text := "Menu" , Font := "Arial" , Font_Size:= 16 " Bold" , Font_Color_Top := "A866E2" , Font_Color_Bottom := "111111" , Window := "1" , Label := "EditFile" , Default_Button := 1 , Roundness:=8 ) )
 	HB_Button.Push( New HB_Flat_Rounded_Button_Type_1( x +x +x +w +w , y , w  , h , Button_Color := "C1C1C1" , Button_Background_Color , Text := "Reload" , Font := "Segoe UI" , Font_Size:= 16 " Bold" , Font_Color_Top := "A866E2" , Font_Color_Bottom := "111111" , Window := "1" , Label := "ReloadMe" , Default_Button := 1 , Roundness:=8 ) )
 	
 	; gui, add, Button,ys gEditFile, Edit Menu
@@ -213,7 +226,7 @@ FinalizeGUI:
 	Gui, Add, Text, x5 h0 w250 0x10
 
 	;Hotkey Info
-	Gui,Font, s14, Arial
+	Gui,Font, s10, Arial
 	gui, Add, Text, xs cRed,  Current Hotkey = %myHotkey%
 
 	; Gui,Font, s14, Arial
@@ -228,8 +241,20 @@ FinalizeGUI:
 
 	Gui, +hwnd_hwnd
 	; Gui, Color, 0x000000
-	
-	Gui, Show	;, x%xpos% y%ypos%, Main
+
+	gosub LoadOptions
+	if (%xPos% = xPos)
+		{
+
+		}
+	if (%xPos% = 0)
+		{
+
+		}
+	Else
+	{
+		Gui, Show, x%xpos% y%ypos%
+	}
 	
 	; GuiControl,1:Focus,% Up_Down1.Hwnd
 
@@ -241,7 +266,6 @@ FinalizeGUI:
 
 	return 
 }
-
 
 /*	NOTES
 	Gui, Add, Text, x5 y5 w150 0x10  ;Horizontal Line > Etched Gray
@@ -324,7 +348,6 @@ Excel_Get(WinTitle:="ahk_class XLMAIN", Excel7#:=1)
 }
 
 
-
 ReloadMe:
 	Reload
 	Sleep 1000 ; If successful, the reload will close this instance during the Sleep, so the line below will never be reached.
@@ -342,10 +365,26 @@ return
 
 ;Close GUI when exit button pressed or ESC pressed. This doesn't stop the script's execution.
 GuiEscape:
+	gosub SavePos
 	Gui, Destroy
 return
 
+GuiClose:
+	gosub SavePos
+	Gui, Destroy
+return
 
+SavePos:
+    Gui +lastfound
+    WinGetPos, xPos, yPos
+	if %xPos% = xPos
+		return
+	if %xPos% = 0
+		return
+
+    IniWrite, %xPos%, config.ini, Settings, xPos
+    IniWrite, %yPos%, config.ini, Settings, yPos
+Return
 
 Move_Window(){
 	PostMessage,0xA1,2
