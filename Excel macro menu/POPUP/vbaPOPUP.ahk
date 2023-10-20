@@ -107,6 +107,8 @@ ezMenu_init:
 */
 {
 global menu_created, default_label, default_item, disabled_item, tab_width, s_tab ;*[vbaMenu]
+if menu_created
+    return
 default_label := ""
 tab_width = 4
 loop, % tab_width
