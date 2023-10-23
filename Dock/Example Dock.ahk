@@ -1,6 +1,6 @@
 ﻿#NoEnv
 #SingleInstance, force
-#Include, Class Dock.ahk
+
 Gui, +hwndGuihwnd
 Gui, Font, s9				
 Gui, Add, Button, gBtn, Dock to Top
@@ -13,14 +13,13 @@ Gui, Add, Button, gBtn, Dock to TL
 Gui, Add, Button, gBtn, Dock to TR
 
 
-
 Gui, Show, xCenter yCenter w300, class Dock Example  
 Gui, +AlwaysOnTop
 
+#Include, Class Dock.ahk
 ;The first argument is the host's hwnd and the second the client's hwnd
-
 exDock := new Dock( Dock.HelperFunc.Run("notepad.exe"),Guihwnd)
-exDock.Position("BL")
+exDock.Position("TL")
 exDock.CloseCallback := Func("CloseCallback")
 
 Return

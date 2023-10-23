@@ -1,4 +1,12 @@
 /*
+	Anastasiou Alex
+	---------------
+	added interior corners as docking position
+	disabled move Host when moving Client (just commented out that part)
+
+*/
+
+/*
 	Class Dock
 		Attach a window to another
 	Author
@@ -9,7 +17,7 @@
 		0.2.1 (2017.05.07)
 		0.2.1.1 bug fixed (2017.05.09)
 		0.2.2 testing multiple docks... (2017.05.09)
-		0.2.2.1 INSIDE Bottom/Top - Left/Right (Mod by Anastasiou Alex)
+		0.2.3 interior corners as docking position (2023.10.23) (by Anastasiou Alex)
 	License
 		WTFPL (http://wtfpl.net/)
 	Dev env
@@ -20,6 +28,7 @@
 	thanks to
 		Helgef for overall coding advices
 */
+
 class Dock
 {
 	static EVENT_OBJECT_LOCATIONCHANGE := 0x800B
@@ -117,7 +126,7 @@ class Dock
 		 this.Bound.Push( new this( !NumGet(&this.Bound, 4*A_PtrSize) ? this.hwnd.Client : last_hwnd, hwnd ) )
 
 
-		If pos Contains Top,Bottom,Right,Left
+		If pos Contains Top,Bottom,Right,Left,BL,BR,TL,TR
 			this.Bound[NumGet(&this.Bound, 4*A_PtrSize)].Position(pos)
 
 		last_hwnd := hwnd
