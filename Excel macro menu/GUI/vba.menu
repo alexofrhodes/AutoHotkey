@@ -103,8 +103,8 @@ WORKBOOK
 	aw_VersionMinor
 	aw_VersionPatch
 DESIGNER
+	ad_CenterLabelCaption
 	ad_CopyControlProperties
-	ad_CreateFrameMenu
 	ad_PasteControlProperties
 	ad_RemoveCaption
 	ad_RenameControlAndCode
@@ -114,11 +114,12 @@ DESIGNER
 	ad_SwitchNames
 	ad_SwitchPositions
 USERFORMS
-	uShow_ProjectManager
-	uShow_References
-	uShow_ProjectExplorer
-	uShow_Skeleton
+	uShow_Changelog
 	uShow_CodeOnTheFly
+	uShow_ProjectManager
+	uShow_ProjectExplorer
+	uShow_References
+	uShow_Skeleton
 	uShow_SnippetsVBE
 	uShow_SnippetsWorkbook
 SHAPES

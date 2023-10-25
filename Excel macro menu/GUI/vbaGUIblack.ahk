@@ -75,11 +75,6 @@ LoadOptions:
     IniRead, xPos, config.ini, Settings, xPos, 100
     IniRead, yPos, config.ini, Settings, yPos, 100
 
-	if %xPos% = xPos
-		xPos = 100
-	if %yPos% = yPos
-		yPos = 100
-
 return ;if you comment this out then the gui will show at startup (hotkey still works)
 
 Start:
@@ -121,8 +116,8 @@ ChooseGui:
 	
 	if (ChooseGui="") 
 		ChooseGui:=0
-	Else
-		gosub SavePos
+	
+	gosub SavePos
 
 	Gui, Submit
 	Gui, Destroy
@@ -243,19 +238,8 @@ FinalizeGUI:
 	; Gui, Color, 0x000000
 
 	gosub LoadOptions
-	if (%xPos% = xPos)
-		{
+	Gui, Show, x%xpos% y%ypos%
 
-		}
-	if (%xPos% = 0)
-		{
-
-		}
-	Else
-	{
-		Gui, Show, x%xpos% y%ypos%
-	}
-	
 	; GuiControl,1:Focus,% Up_Down1.Hwnd
 
 	; Main.Show_Window()
@@ -377,9 +361,9 @@ return
 SavePos:
     Gui +lastfound
     WinGetPos, xPos, yPos
-	if %xPos% = xPos
+	if (xPos <= xPos)
 		return
-	if %xPos% = 0
+	if (xPos = 0)
 		return
 
     IniWrite, %xPos%, config.ini, Settings, xPos

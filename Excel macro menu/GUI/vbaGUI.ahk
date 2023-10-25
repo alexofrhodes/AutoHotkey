@@ -7,23 +7,6 @@ AUTHOR:
 		https://www.youtube.com/channel/UC5QH3fn1zjx0aUjRER_rOjg
 		
 PURPOSE: GUI to run excel macros
-
-VERSION:	1.1
-				+ added button to reload
-				+ added button to open menu file for editing
-				+ added button to edit options
-					+ moved options to ini file (hotkey, workbookname, menufile, itemspercolumn)
-						@TODO add dropdown to switch menu files, or autoswitch based on active window title
-					+ ini-editor.ahk
-				+ added text control to display current myHotkey
-				+ own icon in tray
-
-NOTE:
-		@TODO find correct way to parse the menu
-		vbaPOPUP.ahk (using EZmenu) supports multiple submenus
-		This vbaGUI.ahk can use the same menu file as vba, 
-		but supports only lvl1 = Category , lvl2 = Macro Name
-
 */
 
 
@@ -32,7 +15,7 @@ NOTE:
 
 
 #SingleInstance, force
-SetWorkingDir, %A_ScriptDir%
+SetWorkingDir %A_ScriptDir%
 #include ini-editor.ahk
 
 #Include Class_ImageButton.ahk
@@ -70,7 +53,7 @@ LoadOptions:
 	
 	IniRead, xPos, config.ini, Settings, xPos, 100
 	IniRead, yPos, config.ini, Settings, yPos, 100
-
+	
 return ;if you comment this out then the gui will show at startup (hotkey still works)
 
 Start:
@@ -218,18 +201,7 @@ FinalizeGUI:
 	
 	
 	gosub LoadOptions
-	if (%xPos% = xPos)
-		{
-
-		}
-	if (%xPos% = 0)
-		{
-
-		}
-	Else
-	{
-		Gui, Show, x%xpos% y%ypos%
-	}
+	Gui, Show, x%xpos% y%ypos%
 	
 	; WinSet, Transparent, 225, % "ahk_id " _hwnd
 
@@ -348,9 +320,7 @@ return
 SavePos:
     Gui +lastfound
     WinGetPos, xPos, yPos
-	if %xPos% = xPos
-		return
-	if %xPos% = 0
+	if (xPos <= 0) 
 		return
     IniWrite, %xPos%, config.ini, Settings, xPos
     IniWrite, %yPos%, config.ini, Settings, yPos
