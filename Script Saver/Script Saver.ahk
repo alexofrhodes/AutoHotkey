@@ -247,7 +247,7 @@ SaveScript()
     
     saveToFile := (saveToFolder ? saveToFolder : A_ScriptDir) "\" (filename ? filename : A_Now) "." TargetExtension
 
-    FileAppend, %sURL% `n %textToSave%, %saveToFile%, UTF-8
+    FileAppend, %sURL% `n`n %textToSave%, %saveToFile%, UTF-8
 
     if (ChEditAfterSave = 1)
     {
