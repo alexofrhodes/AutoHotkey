@@ -236,9 +236,8 @@ SaveScript()
     ; FileCreateDir, %saveToFolder%
     GuiControlGet, EditFileNameValue, , EditFileName
     if StrLen(EditFileNameValue) > 0
-    if StrLen(%EditFileNameValue%) > 0
     {
-        filename := %EditFileNameValue%
+        filename := EditFileNameValue
     }else if (ChAskFileName = 1) or (%EditFileNameValue% = ""){
         InputBox, filename, Enter the name for the script's file:,,, 300, 100
         if ErrorLevel
@@ -249,9 +248,10 @@ SaveScript()
     saveToFile := (saveToFolder ? saveToFolder : A_ScriptDir) "\" (filename ? filename : A_Now) "." TargetExtension
 
     FileAppend, %sURL% `n %textToSave%, %saveToFile%, UTF-8
+
     if (ChEditAfterSave = 1)
     {
-        Run, %saveToFile%
+        Run, edit %saveToFile%
     }
     textToSave := filename := savedClipboard := saveToFile := ""
     Gui, Show
