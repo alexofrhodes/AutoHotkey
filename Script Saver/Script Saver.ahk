@@ -1,210 +1,263 @@
-SendMode, Input  ; Recommended for new scripts due to its superior speed and reliability.
 #SingleInstance, Force
 SetKeyDelay, 50
 
 ModernBrowsers := "ApplicationFrameWindow,Chrome_WidgetWin_0,Chrome_WidgetWin_1,Maxthon3Cls_MainFrm,MozillaWindowClass,Slimjet_WidgetWin_1"
 LegacyBrowsers := "IEFrame,OperaWindowClass"
 
-nTime := A_TickCount
-WinGetClass, sClass, A
-
-;Custom Tray Icon
-I_Icon = ScriptSaver.ico ;<a href="https://www.flaticon.com/free-icons/script" title="script icons">Script icons created by Pixel perfect - Flaticon</a>
+; Custom Tray Icon
+I_Icon = ScriptSaver.ico
 IfExist, %I_Icon%
-	Menu, Tray, Icon, %I_Icon%
+    Menu, Tray, Icon, %I_Icon%
 
-;Event for Tray icon left click
+; Event for Tray icon left-click
 OnMessage(0x404, "AHK_NOTIFYICON")
+
+global MyPaths := ""
+global MyExtensions := ""
+
+global SettingsFile := "config.ini"
+global TargetPath
+global TargetExtension
+global ChAskFileName
+global ChEditAfterSave
+global EditFileNameValue 
+
 AHK_NOTIFYICON(wParam, lParam)
 {
     if (lParam = 0x201) ; WM_LBUTTONDOWN
     {
-        gosub CreateGui
+        CreateGui()
         return 0
     }
 }
 
-CreateGui:
-{
-    gui, destroy
-    SettingsFile = config.ini
-    Gosub, ReadIni ;If the file doesn't exist yet, the default lists will be used.
+createGui()
 
-    Gui , Add, ComboBox, w200 hwndComboPath vTargetPath gSaveSettings, %MyPaths%
-    Gui , Font, Bold
-    Gui , Add, Button, ys w18 h18 gAddPaths, + ;Buttons go to their g-label when clicked.
-    Gui , Add, Button, ys w18 h18 gRemPaths, -
-    Gui , Font, Normal
-    Gui , Add, ComboBox, w200 hwndComboExtension xs section vTargetExtension gSaveSettings, %MyExtensions%
-    Gui , Font, Bold
-    Gui , Add, Button, ys w18 h18 gAddExtensions, +
-    Gui , Add, Button, ys w18 h18 gRemExtensions, -
-    Gui , Font, Normal
+return
 
-    gui, add, Checkbox, xs section gSaveSettings vChAskFileName, Ask for file name
-    gui, add, Checkbox, ys gSaveSettings vChEditAfterSave, Edit after save  
+CreateGui(){
+    global 
+    Gui, destroy
+    LoadPaths()
+    LoadExtensions()
 
-    Gui , Add, Button, w200 xs y+20 section gSaveScript, Save Script
-    gui, add, button, ys gOpenFolder, Folder
+    gui, add, Text,x12 section,File Name 
+    IniRead, EditFileNameValue, %SettingsFile%, Settings, FileName
+    Gui, Add, Edit, xs vEditFileName gSaveSettings -wrap -wanttab -WantReturn w200 section, %EditFileNameValue%
 
-	;AUTHOR links
-	Gui, Add, Link,xs y+20 section, 	<a href="https://github.com/alexofrhodes/">GitHub </a> 
-	Gui, Add, Link,ys, <a href="https://alexofrhodes.github.io/">Blog</a> 
-	Gui, Add, Link,ys, 			        <a href="https://www.youtube.com/channel/UC5QH3fn1zjx0aUjRER_rOjg">	YouTube		</a> 
+    IniRead, ChAskFileName, %SettingsFile%, Settings, AskFileName
+    Gui, Add, CheckBox, gSaveSettings vChAskFileName Checked%ChAskFileName%, Ask for file name instead
+  
+    Gui, Add, Button, ys w100 section gSaveScript, Save Script
+    IniRead, ChEditAfterSave, %SettingsFile%, Settings, EditAfterSave    
+    Gui, Add, CheckBox, gSaveSettings vChEditAfterSave Checked%ChEditAfterSave%, Edit after save
 
-    iniread, DefaultPath, Config.ini, Settings, Path
-    iniread, DefaultExtension, Config.ini, Settings, Extension
+    Gui, Add, Text, section x12 w300 0x10  ;Horizontal Line > Etched Gray
+    ; Gui, Add, Text, x5 y5 h150 0x11  ;Vertical Line > Etched Gray
+    ; Gui, Add, Text, x5 y155 w150 h1 0x7  ;Horizontal Line > Black
+    ; Gui, Add, Text, x155 y5 w1 h150 0x7  ;Vertical Line > Black
 
-    GuiControl, Text, %ComboPath%, %DefaultPath%
-    GuiControl, Text, %ComboExtension%, %DefaultExtension%
+    gui, add, text, x12 ys+10  section, Target Folder
+    Gui, Add, Button, ys-3 gOpenFolder, Open
+    gui, add, button, ys-3 gAddNewFolder, New
+    Gui, Add, ListBox, x12 w150 hwndhTargetPath vTargetPath gSaveSettings, %MyPaths%
+    ItemHeight := LB_GetItemHeight(hTargetPath)
+    hIndex := StrSplit(MyPaths, "|").length() * ItemHeight
+    GuiControl, move, TargetPath , h%hIndex%
+   
+    iniRead, selItem, %SettingsFile%, Settings, Path   
+    ControlGet, Items, List, , TargetPath
+    Loop, Parse, MyPaths, |
+        if A_LoopField = %selItem%
+            {
+                GuiControl, Choose, TargetPath, %A_Index% 
+                break
+            }
 
-    iniread, DefaultEditAfterSave, Config.ini, Settings, EditAfterSave
-    iniread, DefaultAskForName, Config.ini, Settings, AskForName
-    
-    GuiControl, , ChEditAfterSave, %DefaultEditAfterSave%
-    GuiControl, , ChAskForName, %DefaultAskForName%
+    gui, add, text, ys section  , File Extension
+    Gui, Add, Button, ys-3  w18 h18 gAddExtension, +
+    Gui, Add, Button, ys-3 w18 h18 gRemoveExtension, -
 
-    gui, +AlwaysOnTop
-    Gui , Show, , Script Saver 
-    Return
+    Gui, Add, ListBox, w150 hwndhTargetExtension vTargetExtension xs section gSaveSettings, %MyExtensions%
+    ItemHeight := LB_GetItemHeight(hTargetExtension)
+    hIndex := StrSplit(MyExtensions, "|").length() * ItemHeight
+    GuiControl, move, TargetExtension , h%hIndex%
+
+    iniRead, selItem, %SettingsFile%, Settings, Extension   
+    ControlGet, Items, List, , TargetExtension
+    Loop, Parse, MyExtensions, |
+        if A_LoopField = %selItem%
+            {
+                GuiControl, Choose, TargetExtension, %A_Index% 
+                break
+            }
+
+
+    Gui, +AlwaysOnTop -MinimizeBox -MaximizeBox
+    Gui, Show, autosize, Script Saver
+    return
 }
 
-OpenFolder: 
-    Gui, Submit, NoHide ;Get the new type.
-    Run, %TargetPath%
-Return
+LoadExtensions(){
+    IniRead, MyExtensions, config.ini, Settings, MyExtensions 
+}
+
+AddNewFolder(){
+    global
+    InputBox, NewFolder , Creating a Folder, Choose New Folder's Name, , , 100
+    if NewFolder = ""
+        return
+    FileCreateDir, saved scripts\%NewFolder%
+    MyPaths .= "|" . NewFolder
+    GuiControl, , TargetPath, %NewFolder%
+    ItemHeight := LB_GetItemHeight(hTargetPath)
+    hIndex := StrSplit(MyPaths, "|").length() * ItemHeight
+    GuiControl, move, TargetPath , h%hIndex%
+    gui, show, AutoSize
+}
+
+LoadPaths(){
+    global
+    MyPaths .= ""
+    Loop Files, %A_ScriptDir%\saved scripts\*, D  
+        {
+            SplitPath, A_LoopFileFullPath, FileName, Folder, Extension, Filename_no_ext	
+            MyPaths .= "|" . FileName
+        }    
+        MyPaths := SubStr(mypaths,2)
+        return
+}
 
 GuiEscape:
 GuiClose:
 {
-    gosub, SaveSettings
-    gui,hide
+    SaveSettings()
+    Gui, Hide
     return
 }
 
-SaveSettings:
-{
-    Gui, Submit, NoHide ;Get the new type.   
-    IniWrite, %TargetPath%, Config.ini, Settings, Path
-    IniWrite, %TargetExtension%, Config.ini, Settings, Extension   
-    IniWrite, %ChEditAfterSave%, Config.ini, Settings, EditAfterSave   
-    IniWrite, %ChAskFileName%, Config.ini, Settings, AskFileName  
 
-    if A_ThisHotkey = "GuiClose"
-        gui, hide
-    Return
-}
+OpenFolder:
+    Gui, Submit, NoHide
+    Run, %A_ScriptDir%\saved scripts\%TargetPath%\
+    return
 
-AddPaths:
-{
-    Gui, Submit, NoHide ;Get the new type.
-    MyPaths .= "|" . TargetPath ;Add a pipe and the new type onto the list.
-    GuiControl,, TargetPath, %TargetPath% ;Add the new type to the GUI.
-    Gosub, SaveSettings
-    Return
-}
-
-RemPaths:
+SaveSettings()
 {
     Gui, Submit, NoHide
-    Temp =
-    Loop, Parse, MyPaths, | ;Loop over each item in the list.
-    {
-        If !A_LoopField Or (A_LoopField = TargetPath) ;If this is the item you want to delete (or if it's blank), skip it.
-            Continue
-        Temp .= "|" . A_LoopField ;Put all the other items back into a list.
-    }
-    MyPaths := Temp
-    GuiControl,, TargetPath, %MyPaths% ;Update the GUI with the new list.
-    Gosub, SaveSettings
-    Return
+    IniWrite, %TargetPath%, %SettingsFile%, Settings, Path
+    IniWrite, %TargetExtension%, %SettingsFile%, Settings, Extension
+    IniWrite, %ChEditAfterSave%, %SettingsFile%, Settings, EditAfterSave
+    IniWrite, %ChAskFileName%, %SettingsFile%, Settings, AskFileName
+    IniWrite, %MyExtensions%, %SettingsFile%, Settings, MyExtensions
+    
+    GuiControlGet, EditFileNameValue, , EditFileName
+    iniWrite, %EditFileNameValue%, %SettingsFile%, Settings, FileName
+    return
 }
 
-AddExtensions:
+AddExtension()
 {
+    global
     Gui, Submit, NoHide
+    InputBox, Extension, add new Extension
+    if Extension = ""
+        return
     MyExtensions .= "|" . Extension
-    GuiControl,, Extension, %Extension%
-    Gosub, SaveSettings
-    Return
+    GuiControl, , TargetExtension, %Extension%
+    b_index := StrSplit(MyExtensions, "|").length()
+    ; Control, Choose, 3, hTargetExtension    ;;not working???
+
+    ItemHeight := LB_GetItemHeight(hTargetExtension)
+    hIndex := StrSplit(MyExtensions, "|").length() * ItemHeight
+    GuiControl, move, TargetExtension , h%hIndex%
+    
+    SaveSettings()
+    gui,show, AutoSize
+    return
 }
 
-RemExtensions:
+RemoveExtension()
 {
+    global
     Gui, Submit, NoHide
-    Temp =
+    Temp := ""
     Loop, Parse, MyExtensions, |
     {
-        If !A_LoopField Or (A_LoopField = Extension)
-            Continue
+        if !A_LoopField || (A_LoopField = TargetExtension)
+            continue
         Temp .= "|" . A_LoopField
     }
-    MyExtensions := Temp
-    GuiControl,, Extension, %MyExtensions%
-    Gosub, SaveSettings
-    Return
+
+    StringMid, MyExtensions, Temp, 2
+    GuiControl,,TargetExtension,|
+    GuiControl, , TargetExtension, %MyExtensions%
+
+    ItemHeight := LB_GetItemHeight(hTargetExtension)
+    hIndex := StrSplit(MyExtensions, "|").length() * ItemHeight
+    GuiControl, move, TargetExtension , h%hIndex%
+        
+    SaveSettings()
+    gui,show, AutoSize
+    return
 }
 
-ReadIni:
+SaveScript()
 {
-    IniRead, MyPaths, %SettingsFile%, Settings, MyPaths, VBA|AHK
-    IniRead, MyExtensions, %SettingsFile%, Settings, MyExtensions, TXT|AHK
-    If (InStr(MyPaths, "|") = 1) ;This just makes sure there is not a pipe at the beginning so that there's not a blank space at the top of the list.
-        MyPaths := SubStr(MyPaths, 2)
-    If (InStr(MyExtensions, "|") = 1)
-        MyExtensions := SubStr(MyExtensions, 2)
-    Return
-}
+    Gui, Hide
+    Gui, Submit, NoHide
 
-SaveScript:
-{
-    gui, hide
-    Gui, Submit, NoHide ;Get the new type.   
-
-    savedClipboard := ClipboardAll	; Backup data from clipboard.
+    savedClipboard := ClipboardAll
     Clipboard := ""
-	While !Clipboard	; Try to copy selected (it may fail, and then we have to retry).
-        {
-            Send, {Ctrl Down}c{Ctrl Up}
-            Sleep, 5
-        }
+    While !Clipboard
+    {
+        Send, ^c
+        Sleep, 1
+    }
 
-    textToSave := Clipboard			
+    textToSave := Clipboard
     Clipboard := savedClipboard
-    sURL := GetActiveBrowserURL()
+
+    IfWinActive, %ModernBrowsers% ahk_exe chrome.exe ; Add your browser's executable name
+    {        
+        sURL := GetActiveBrowserURL()
+    }else{
+        WinGetTitle, sURL, A
+    }
 
     Extension := TargetExtension
     saveToFolder := TargetPath
-    
-    if %saveToFolder% := "" 
-        FileSelectFolder, saveToFolder, *%A_ScriptDir% 
-    if %saveToFolder% := "" 						
-        return
-    FileCreateDir, %saveToFolder%
-    
-    ; RegRead, editor, HKCR, AutoHotkeyScript\Shell\Edit\Command	; Get user's editor assigned for the filetype.
-    ; editor := StrReplace(editor, "%SystemDrive%", SystemDrive)
-    
-	If (ChAskFileName = 1)
-        {
-            InputBox, filename, Enter the name for the script's file:,,, 300, 100
-            If ErrorLevel	; Flush the variable's contents in case user canceled or closed the input box.
-                filename := ""
-        }
 
-    saveTofile := (saveToFolder ? saveToFolder :A_ScriptDir "\" %saveToFolder%) "\" (filename ? filename : A_Now) "." TargetExtension
+    if (saveToFolder = "")
+        FileSelectFolder, saveToFolder, %A_ScriptDir%
+    Else
+        saveToFolder := A_ScriptDir "\saved scripts\" saveToFolder
 
-    FileAppend, %sURL% `n %textToSave%, %saveTofile%, UTF-8	 ; Save selected into a file next to this script.
+    ; FileCreateDir, %saveToFolder%
+    GuiControlGet, EditFileNameValue, , EditFileName
+    if StrLen(EditFileNameValue) > 0
+    if StrLen(%EditFileNameValue%) > 0
+    {
+        filename := %EditFileNameValue%
+    }else if (ChAskFileName = 1) or (%EditFileNameValue% = ""){
+        InputBox, filename, Enter the name for the script's file:,,, 300, 100
+        if ErrorLevel
+            filename := ""
+    }
+    
+    
+    saveToFile := (saveToFolder ? saveToFolder : A_ScriptDir) "\" (filename ? filename : A_Now) "." TargetExtension
 
+    FileAppend, %sURL% `n %textToSave%, %saveToFile%, UTF-8
     if (ChEditAfterSave = 1)
-        { 
-            ; Run, % (editor ? StrReplace(editor, "%1", """" saveTofile """") : notepad.exe  """" saveTofile """") 
-            Run, edit %saveTofile%
-        }
-    textToSave := filename := savedClipboard := saveTofile := ""	; Restore clipboard from backup and clean temporary variables.
-    gui, show
+    {
+        Run, %saveToFile%
+    }
+    textToSave := filename := savedClipboard := saveToFile := ""
+    Gui, Show
     return
 }
+
 
 GetActiveBrowserURL() {
 	global ModernBrowsers, LegacyBrowsers
@@ -313,3 +366,23 @@ Acc_Children(Acc) {
 			ErrorLevel := "AccessibleChildren DllCall Failed"
 	}
 }
+
+
+; ----------------------------------------------------------------------------------------
+GetClientHeight(HWND) { ; Retrieves the height of the client area.
+    VarSetCapacity(RECT, 16, 0)
+    DllCall("User32.dll\GetClientRect", "Ptr", HWND, "Ptr", &RECT)
+    Return NumGet(RECT, 12, "Int")
+ }
+ ; ----------------------------------------------------------------------------------------
+ LB_GetItemHeight(HLB) { ; Retrieves the height of a single list box item.
+    ; LB_GETITEMHEIGHT = 0x01A1
+    SendMessage, 0x01A1, 0, 0, , ahk_id %HLB%
+    Return ErrorLevel
+ }
+ ; ----------------------------------------------------------------------------------------
+ LB_GetCount(HLB) { ; Retrieves the number of items in the list box.
+    ; LB_GETCOUNT = 0x018B
+    SendMessage, 0x018B, 0, 0, , ahk_id %HLB%
+    Return ErrorLevel
+ } 
