@@ -104,8 +104,8 @@ LoadExtensions(){
 
 AddNewFolder(){
     global
-    InputBox, NewFolder , Creating a Folder, Choose New Folder's Name, , , 100
-    if NewFolder = ""
+    InputBox, NewFolder , Creating a Folder, Choose New Folder's Name,,,130
+    if StrLen(NewFolder) =0
         return
     FileCreateDir, saved scripts\%NewFolder%
     MyPaths .= "|" . NewFolder
@@ -160,8 +160,8 @@ AddExtension()
 {
     global
     Gui, Submit, NoHide
-    InputBox, Extension, add new Extension
-    if Extension = ""
+    InputBox, Extension, add new Extension,,,,130
+    if StrLen(Extension) = 0
         return
     MyExtensions .= "|" . Extension
     GuiControl, , TargetExtension, %Extension%
@@ -239,7 +239,7 @@ SaveScript()
     {
         filename := EditFileNameValue
     }else if (ChAskFileName = 1) or (%EditFileNameValue% = ""){
-        InputBox, filename, Enter the name for the script's file:,,, 300, 100
+        InputBox, filename, Enter the name for the script's file,,,,130
         if ErrorLevel
             filename := ""
     }
