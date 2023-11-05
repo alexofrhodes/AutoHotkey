@@ -29,7 +29,7 @@ AHK_NOTIFYICON(wParam, lParam){
   if (lParam = 0x201) ; WM_LBUTTONDOWN
     {
       WinGet, win_minimized, MinMax, DropFolder
-      if (win_minimized != 1)
+      if (win_minimized = 0)
         Gui, Hide
       else
         gosub, start
