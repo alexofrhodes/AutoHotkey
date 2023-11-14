@@ -9,11 +9,13 @@ SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 ; Press Ctrl while dropping to copy files
 
 ; Anastasiou Alex
-;----------------
+; 
 ; load lists from txt files
 ; right click menu to 
-;   switch lists
-;   Add Current Folder or Selected Folder(s) To List
+;   switch lists (if image with list's name exists then apply it)
+;   open lists folder
+;   edit current list
+;   Add Current Folder or the Folder(s) from the selected items to the current List
 
 #SingleInstance,Force
 SetWindelay,0
@@ -24,19 +26,21 @@ I_Icon := A_ScriptDir "\img\FileCabinet.jpg"
 iF FileExist(I_Icon)
   Menu, Tray, Icon , %I_Icon%
 
+;toggle gui visibility by left click on tray icon
 OnMessage(0x404, "AHK_NOTIFYICON")
 AHK_NOTIFYICON(wParam, lParam){
-  if (lParam = 0x201) ; WM_LBUTTONDOWN
-    {
-      WinGet, win_minimized, MinMax, DropFolder
-      if (win_minimized = 0)
-        Gui, Hide
-      else
-        gosub, start
-    }
+  if !(lParam = 0x201) ; WM_LBUTTONDOWN
+    return
+  WinGet, win_minimized, MinMax, DropFolder
+  if (win_minimized = 0)
+    Gui, Hide
+  else
+    gui, show
 }
 
-Start:
+Global guiid :=
+
+CreateGUI:
 {
   gui, destroy
   gosub, LoadSettings
@@ -46,10 +50,10 @@ Start:
   w=100
   h=
   location=AlwaysOnTop
-  Gosub,MENU
-  OnMessage(0x112,"WM_SYSCOMMAND")
   If location=AlwaysOnTop
     guioptions:="+" location
+
+  ; w or h is fixed, autosize picture keeping ratio
   If w<>
     pictureoptions:="H-1 W" w
   Else
@@ -57,12 +61,13 @@ Start:
   Gui,Margin,0,0
   Gui,% "-Caption +ToolWindow +LastFound -Resize " guioptions
   guiid:=WinExist()
-  Gui,Add,Picture,% pictureoptions " GMOVEWINDOW",% picture
+  Gui,Add,Picture,% pictureoptions " GMOVEWINDOW vListPicture",% picture
 
   Gui, Color, Black
   gui, font, s10 w600 cYellow, Consolas
   gui,add,Text, +BackgroundBlack vListCaption h16, AAAAAAAAAAA
   gosub, assignCaption
+
   Gui,Show,% "X" x " Y" y, DropFolder
   WinSet,Transparent,% transparency
 }
@@ -78,19 +83,44 @@ return
 
 LoadSettings:
 {
-  picture=img\FileCabinet.jpg
   IniRead, loadedList, DropFolder.ini, Settings, loadedList, DropLists.txt
+  SplitPath, loadedList, , , , NameNoExt
+  fileName = lists\%NameNoExt%.jpg
+  if FileExist(filename)
+    picture=%fileName%
+  Else
+    picture=img\FileCabinet.jpg
+ 
+  Try GuiControl,, ListPicture, %picture%
+
   loadedList=LISTS\%loadedList%
   selectedFiles := []
   FileRead, fileContents, %loadedList%
   Loop, Parse, fileContents, `n
   {
-      line := Trim(A_LoopField)
-      if line
-          selectedFiles.Push(line)
+    line := Trim(A_LoopField)
+    if line
+        selectedFiles.Push(line)
   }
+  GoSub, CreateTargetFolderMenu
 }
 return
+
+SwitchList:
+  IniWrite, %A_ThisMenuItem%.txt, DropFolder.ini, Settings, loadedList
+  GoSub, creategui
+return
+
+CreateTargetFolderMenu:
+{
+  Try 
+    Menu, Menu, DeleteAll
+  Menu, menu, Add, &Browse..., BROWSE
+  Menu, menu, Add
+  for index, filePath in selectedFiles
+    Menu, menu, Add, % filePath, COPY
+  Return
+}
 
 GetExplorerHwnd(hwnd=0){
 	if(hwnd==0){
@@ -112,12 +142,12 @@ GetExplorerHwnd(hwnd=0){
 	}
 	return false
 }
+
 AddCurrentOrSelectedFoldersToList:
 {
-  folderPath := Explorer_GetSelection()
+  folderPath := Explorer_GetSelection() ;active folder or the folders among the selected items
   FileAppend, `n%folderPath%, %loadedList%
   GoSub, LoadSettings
-  GoSub, Menu
 }
 
 Explorer_GetSelection() {
@@ -164,13 +194,6 @@ Switch A_GuiEvent {
 }
 Return
 
-SwitchList:
-  IniWrite, %A_ThisMenuItem%.txt, DropFolder.ini, Settings, loadedList
-  GoSub, LoadSettings
-  GoSub, Menu
-  gosub, assignCaption
-return
-
 GuiDropFiles:
 {  
   GetKeyState,ctrl,Control,P
@@ -180,17 +203,6 @@ GuiDropFiles:
   guiy:=A_GuiY
   files:=A_GuiEvent
   Menu,menu,Show 
-  Return
-}
-
-MENU:
-{
-  Try 
-    Menu, Menu, DeleteAll
-  Menu, menu, Add, &Browse..., BROWSE
-  Menu, menu, Add
-  for index, filePath in selectedFiles
-    Menu, menu, Add, % filePath, COPY
   Return
 }
 
@@ -260,14 +272,8 @@ MOVEWINDOW:
   PostMessage,0xA1,2,,,A   ;WM_NCLBUTTONDOWN=0x00A1 HTCAPTION=2
 Return
 
-;Stolen from Lexicos at http://www.autohotkey.com/forum/topic18260.html
-WM_SYSCOMMAND(wParam) { 
-  Global guiid
-  If (A_Gui && wParam = 0xF020) ; SC_MINIMIZE 
-    WinRestore,ahk_id %guiid% 
-} 
 
-GuiClose: 
-  Gui, Hide 
+GuiClose:
+GuiEscape:
+  gui, Hide
 return
-
