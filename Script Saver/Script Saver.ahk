@@ -21,6 +21,12 @@ global TargetExtension
 global ChAskFileName
 global ChEditAfterSave
 global EditFileNameValue 
+global ChCaptureURL
+global EditPrefixURLValue 
+global EditSufixURLValue 
+global OptAppend
+global OptOverwrite
+
 
 AHK_NOTIFYICON(wParam, lParam)
 {
@@ -38,29 +44,47 @@ return
 CreateGui(){
     global 
     Gui, destroy
+    Gui, Font, s10, Consolas
     LoadPaths()
     LoadExtensions()
 
-    gui, add, Text,x12 section,File Name 
+    gui, add, Text,x12 y10 section, Name 
     IniRead, EditFileNameValue, %SettingsFile%, Settings, FileName
-    Gui, Add, Edit, xs vEditFileName gSaveSettings -wrap -wanttab -WantReturn w200 section, %EditFileNameValue%
+    Gui, Add, Edit, ys-3 vEditFileName gSaveSettings -wrap -wanttab -WantReturn w200 section, %EditFileNameValue%
 
     IniRead, ChAskFileName, %SettingsFile%, Settings, AskFileName
-    Gui, Add, CheckBox, gSaveSettings vChAskFileName Checked%ChAskFileName%, Ask for file name instead
-  
-    Gui, Add, Button, ys w100 section gSaveScript, Save Script
+    Gui, Add, CheckBox,ys+5 gSaveSettings vChAskFileName Checked%ChAskFileName%, Ask
+
+    Gui, Add, Text, section x12 w300 0x10  ;Horizontal Line > Etched Gray
+
+    Gui, Add, CheckBox, x12 ys+10 section gSaveSettings vChCaptureURL Checked%ChCaptureURL%, Capture URL
+    gui, add, Text,ys , Prefix
+    IniRead, EditPrefixURLValue, %SettingsFile%, Settings, EditPrefixURLValue
+    Gui, Add, Edit, ys vEditPrefixURL gSaveSettings -wrap -wanttab -WantReturn ys-3 h20 w30 section, %EditPrefixURLValue%
+    gui, add, Text,ys+3 , Sufix
+    IniRead, EditSufixURLValue, %SettingsFile%,Settings, EditSufixURLValue
+    Gui, Add, Edit, ys vEditSufixURL gSaveSettings -wrap -wanttab -WantReturn h20 w30 section, %EditSufixURLValue%
+
+    Gui, Add, Text, section x12 w300 0x10  ;Horizontal Line > Etched Gray
+
+    Gui, Add, Button, x12 ys+10 section w200  gSaveScript, Save Script
     IniRead, ChEditAfterSave, %SettingsFile%, Settings, EditAfterSave    
-    Gui, Add, CheckBox, gSaveSettings vChEditAfterSave Checked%ChEditAfterSave%, Edit after save
+    Gui, Add, CheckBox,ys+5  gSaveSettings vChEditAfterSave Checked%ChEditAfterSave%, Edit
+
+    IniRead, OptAppend, %SettingsFile%, Settings, OptAppend    
+    Gui, Add, Radio,x24 section gSaveSettings vOptAppend Checked%OptAppend%, Append
+    IniRead, OptOverwrite, %SettingsFile%, Settings, OptOverwrite    
+    Gui, Add, Radio,ys  gSaveSettings vOptOverwrite Checked%OptOverwrite%, Overwrite
 
     Gui, Add, Text, section x12 w300 0x10  ;Horizontal Line > Etched Gray
     ; Gui, Add, Text, x5 y5 h150 0x11  ;Vertical Line > Etched Gray
     ; Gui, Add, Text, x5 y155 w150 h1 0x7  ;Horizontal Line > Black
     ; Gui, Add, Text, x155 y5 w1 h150 0x7  ;Vertical Line > Black
 
-    gui, add, text, x12 ys+10  section, Target Folder
+    gui, add, text, x12 ys+10  section, Folder
     Gui, Add, Button, ys-3 gOpenFolder, Open
     gui, add, button, ys-3 gAddNewFolder, New
-    Gui, Add, ListBox, x12 w150 hwndhTargetPath vTargetPath gSaveSettings, %MyPaths%
+    Gui, Add, ListBox, x12 w160 hwndhTargetPath vTargetPath gSaveSettings, %MyPaths%
     ItemHeight := LB_GetItemHeight(hTargetPath)
     hIndex := StrSplit(MyPaths, "|").length() * ItemHeight
     GuiControl, move, TargetPath , h%hIndex%
@@ -74,11 +98,11 @@ CreateGui(){
                 break
             }
 
-    gui, add, text, ys section  , File Extension
+    gui, add, text, ys section  , Extension
     Gui, Add, Button, ys-3  w18 h18 gAddExtension, +
     Gui, Add, Button, ys-3 w18 h18 gRemoveExtension, -
 
-    Gui, Add, ListBox, w150 hwndhTargetExtension vTargetExtension xs section gSaveSettings, %MyExtensions%
+    Gui, Add, ListBox, w70 hwndhTargetExtension vTargetExtension xs section gSaveSettings, %MyExtensions%
     ItemHeight := LB_GetItemHeight(hTargetExtension)
     hIndex := StrSplit(MyExtensions, "|").length() * ItemHeight
     GuiControl, move, TargetExtension , h%hIndex%
@@ -104,11 +128,20 @@ LoadExtensions(){
 
 AddNewFolder(){
     global
+    gui,hide
     InputBox, NewFolder , Creating a Folder, Choose New Folder's Name,,,130
+    gui,show
     if StrLen(NewFolder) =0
         return
     FileCreateDir, saved scripts\%NewFolder%
     MyPaths .= "|" . NewFolder
+
+    ; Remove leading and trailing '|' if present
+    MyPaths := RegExReplace(MyPaths, "^\||\|$")
+
+    ; Replace '||' with '|'
+    MyPaths := StrReplace(MyPaths, "||", "|")
+        
     GuiControl, , TargetPath, %NewFolder%
     ItemHeight := LB_GetItemHeight(hTargetPath)
     hIndex := StrSplit(MyPaths, "|").length() * ItemHeight
@@ -150,9 +183,19 @@ SaveSettings()
     IniWrite, %ChEditAfterSave%, %SettingsFile%, Settings, EditAfterSave
     IniWrite, %ChAskFileName%, %SettingsFile%, Settings, AskFileName
     IniWrite, %MyExtensions%, %SettingsFile%, Settings, MyExtensions
-    
+
+    IniWrite, %OptAppend%, %SettingsFile%, Settings, OptAppend
+    IniWrite, %OptOverwrite%, %SettingsFile%, Settings, OptOverwrite
+
     GuiControlGet, EditFileNameValue, , EditFileName
     iniWrite, %EditFileNameValue%, %SettingsFile%, Settings, FileName
+
+    GuiControlGet, EditPrefixURLValue, , EditPrefixURL
+    iniWrite, %EditPrefixURLValue%, %SettingsFile%, Settings, EditPrefixURLValue
+
+    GuiControlGet, EditSufixURLValue, , EditSufixURL
+    iniWrite, %EditSufixURLValue%, %SettingsFile%, Settings, EditSufixURLValue
+
     return
 }
 
@@ -160,10 +203,19 @@ AddExtension()
 {
     global
     Gui, Submit, NoHide
+    gui,hide
     InputBox, Extension, add new Extension,,,,130
+    gui,show
     if StrLen(Extension) = 0
         return
     MyExtensions .= "|" . Extension
+
+    ; Remove leading and trailing '|' if present
+    MyExtensions := RegExReplace(MyExtensions, "^\||\|$")
+
+    ; Replace '||' with '|'
+    MyExtensions := StrReplace(MyExtensions, "||", "|")
+    
     GuiControl, , TargetExtension, %Extension%
     b_index := StrSplit(MyExtensions, "|").length()
     ; Control, Choose, 3, hTargetExtension    ;;not working???
@@ -239,7 +291,9 @@ SaveScript()
     {
         filename := EditFileNameValue
     }else if (ChAskFileName = 1) or (%EditFileNameValue% = ""){
+        gui, hide
         InputBox, filename, Enter the name for the script's file,,,,130
+        gui,show
         if ErrorLevel
             filename := ""
     }
@@ -247,12 +301,21 @@ SaveScript()
     
     saveToFile := (saveToFolder ? saveToFolder : A_ScriptDir) "\" (filename ? filename : A_Now) "." TargetExtension
 
-    FileAppend, %sURL% `n`n %textToSave%, %saveToFile%, UTF-8
+    GuiControlGet, EditPrefixURLValue, , EditPrefixURL
+    GuiControlGet, EditSufixURLValue, , EditSufixURL
 
+    if (OptOverwrite = 1) 
+        try
+            FileDelete, %saveToFile%
+    
+    if (ChCaptureURL = 1)
+        FileAppend, %EditPrefixURLValue% SAVED FROM : %sURL% %EditSufixURLValue%`n`n%textToSave%, %saveToFile%, UTF-8
+    Else
+        FileAppend, `n`n SAVED FROM : %textToSave%, %saveToFile%, UTF-8
+    
     if (ChEditAfterSave = 1)
-    {
         Run, edit %saveToFile%
-    }
+
     textToSave := filename := savedClipboard := saveToFile := ""
     Gui, Show
     return
