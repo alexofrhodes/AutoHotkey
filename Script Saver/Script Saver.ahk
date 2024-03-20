@@ -117,7 +117,7 @@ CreateGui(){
             }
 
 
-    Gui, +AlwaysOnTop -MinimizeBox -MaximizeBox
+    Gui, +AlwaysOnTop -MinimizeBox -MaximizeBox -LastFound
     Gui, Show, autosize, Script Saver
     MyPaths := ""
 }
