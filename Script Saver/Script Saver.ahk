@@ -119,7 +119,7 @@ CreateGui(){
 
     Gui, +AlwaysOnTop -MinimizeBox -MaximizeBox
     Gui, Show, autosize, Script Saver
-    return
+    MyPaths := ""
 }
 
 LoadExtensions(){
