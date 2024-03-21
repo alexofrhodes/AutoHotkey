@@ -12,6 +12,7 @@ IfExist, %I_Icon%
 ; Event for Tray icon left-click
 OnMessage(0x404, "AHK_NOTIFYICON")
 
+global basePath := A_ScriptDir "\Snippets"
 global MyPaths := ""
 global MyExtensions := ""
 
@@ -150,14 +151,15 @@ AddNewFolder(){
 }
 
 LoadPaths(){
-    global
     MyPaths .= ""
-    Loop Files, %A_ScriptDir%\saved scripts\*, D  
+    Loop Files, %basePath%\*, DR  
         {
             SplitPath, A_LoopFileFullPath, FileName, Folder, Extension, Filename_no_ext	
-            MyPaths .= "|" . FileName
+            MyPaths .= "`n" . strreplace(A_LoopFileFullPath, basePath "\") 
         }    
-        MyPaths := SubStr(mypaths,2)
+        mypaths := SubStr(mypaths,2)
+        sort MyPaths
+        MyPaths := StrReplace(MyPaths, "`n", "|")
         return
 }
 
@@ -172,7 +174,7 @@ GuiClose:
 
 OpenFolder:
     Gui, Submit, NoHide
-    Run, %A_ScriptDir%\saved scripts\%TargetPath%\
+    Run, %basePath%\%TargetPath%\
     return
 
 SaveSettings()
@@ -283,7 +285,7 @@ SaveScript()
     if (saveToFolder = "")
         FileSelectFolder, saveToFolder, %A_ScriptDir%
     Else
-        saveToFolder := A_ScriptDir "\saved scripts\" saveToFolder
+        saveToFolder := basePath "\" saveToFolder
 
     ; FileCreateDir, %saveToFolder%
     GuiControlGet, EditFileNameValue, , EditFileName
@@ -299,7 +301,7 @@ SaveScript()
     }
     
     
-    saveToFile := (saveToFolder ? saveToFolder : A_ScriptDir) "\" (filename ? filename : A_Now) "." TargetExtension
+    saveToFile := (saveToFolder ? saveToFolder : basePath) "\" (filename ? filename : A_Now) "." TargetExtension
 
     GuiControlGet, EditPrefixURLValue, , EditPrefixURL
     GuiControlGet, EditSufixURLValue, , EditSufixURL
