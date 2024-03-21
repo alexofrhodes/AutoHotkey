@@ -1,6 +1,8 @@
 #SingleInstance, Force
 SetKeyDelay, 50
 
+#Include, guiSaveRestore.ahk
+
 ModernBrowsers := "ApplicationFrameWindow,Chrome_WidgetWin_0,Chrome_WidgetWin_1,Maxthon3Cls_MainFrm,MozillaWindowClass,Slimjet_WidgetWin_1"
 LegacyBrowsers := "IEFrame,OperaWindowClass"
 
@@ -12,21 +14,12 @@ IfExist, %I_Icon%
 ; Event for Tray icon left-click
 OnMessage(0x404, "AHK_NOTIFYICON")
 
+RegExMatch(A_ScriptName, "^(.*?)\.", basename)    
+global guiName := basename1 ;" " VERSION
+
 global basePath := A_ScriptDir "\Snippets"
 global MyPaths := ""
 global MyExtensions := ""
-
-global SettingsFile := "config.ini"
-global TargetPath
-global TargetExtension
-global ChAskFileName
-global ChEditAfterSave
-global EditFileNameValue 
-global ChCaptureURL
-global EditPrefixURLValue 
-global EditSufixURLValue 
-global OptAppend
-global OptOverwrite
 
 
 AHK_NOTIFYICON(wParam, lParam)
@@ -47,84 +40,74 @@ CreateGui(){
     Gui, destroy
     Gui, Font, s10, Consolas
     LoadPaths()
-    LoadExtensions()
 
-    gui, add, Text,x12 y10 section, Name 
-    IniRead, EditFileNameValue, %SettingsFile%, Settings, FileName
-    Gui, Add, Edit, ys-3 vEditFileName gSaveSettings -wrap -wanttab -WantReturn w200 section, %EditFileNameValue%
+    gui, add, Text,xm y10 section, Name 
+    Gui, Add, Edit, ys-3 vEditFileName -wrap -wanttab -WantReturn w300 section
 
-    IniRead, ChAskFileName, %SettingsFile%, Settings, AskFileName
-    Gui, Add, CheckBox,ys+5 gSaveSettings vChAskFileName Checked%ChAskFileName%, Ask
+    Gui, Add, CheckBox,ys+5  vChAskFileName , Ask
 
-    Gui, Add, Text, section x12 w300 0x10  ;Horizontal Line > Etched Gray
 
-    Gui, Add, CheckBox, x12 ys+10 section gSaveSettings vChCaptureURL Checked%ChCaptureURL%, Capture URL
+    Gui, Add, Text, section xm w400 0x10  ;Horizontal Line > Etched Gray
+
+
+    Gui, Add, Button, xm ys+10 section  gSaveScript, Save
+
+    Gui, Add, CheckBox,ys+5   vChEditAfterSave , Edit
+
+    Gui, Add, CheckBox,ys+5  vChConfirmTip , ConfirmTip
+
+    Gui, Add, Radio,ys+5 section  vOptAppend , Append
+    
+    Gui, Add, Radio,ys vOptOverwrite , Overwrite
+
+
+    Gui, Add, Text, section xm w400 0x10  ;Horizontal Line > Etched Gray
+
+
+    Gui, Add, CheckBox, xm+50 ys+10 section  vChCaptureURL , Capture URL
     gui, add, Text,ys , Prefix
-    IniRead, EditPrefixURLValue, %SettingsFile%, Settings, EditPrefixURLValue
-    Gui, Add, Edit, ys vEditPrefixURL gSaveSettings -wrap -wanttab -WantReturn ys-3 h20 w30 section, %EditPrefixURLValue%
+
+    Gui, Add, Edit, ys vEditPrefixURL  -wrap -wanttab -WantReturn ys-3 h20 w60 section
     gui, add, Text,ys+3 , Sufix
-    IniRead, EditSufixURLValue, %SettingsFile%,Settings, EditSufixURLValue
-    Gui, Add, Edit, ys vEditSufixURL gSaveSettings -wrap -wanttab -WantReturn h20 w30 section, %EditSufixURLValue%
+    Gui, Add, Edit, ys vEditSufixURL  -wrap -wanttab -WantReturn h20 w60 section
 
-    Gui, Add, Text, section x12 w300 0x10  ;Horizontal Line > Etched Gray
-
-    Gui, Add, Button, x12 ys+10 section w200  gSaveScript, Save Script
-    IniRead, ChEditAfterSave, %SettingsFile%, Settings, EditAfterSave    
-    Gui, Add, CheckBox,ys+5  gSaveSettings vChEditAfterSave Checked%ChEditAfterSave%, Edit
-
-    IniRead, OptAppend, %SettingsFile%, Settings, OptAppend    
-    Gui, Add, Radio,x24 section gSaveSettings vOptAppend Checked%OptAppend%, Append
-    IniRead, OptOverwrite, %SettingsFile%, Settings, OptOverwrite    
-    Gui, Add, Radio,ys  gSaveSettings vOptOverwrite Checked%OptOverwrite%, Overwrite
-
-    Gui, Add, Text, section x12 w300 0x10  ;Horizontal Line > Etched Gray
+    Gui, Add, Text, section xm w400 0x10  ;Horizontal Line > Etched Gray
     ; Gui, Add, Text, x5 y5 h150 0x11  ;Vertical Line > Etched Gray
     ; Gui, Add, Text, x5 y155 w150 h1 0x7  ;Horizontal Line > Black
     ; Gui, Add, Text, x155 y5 w1 h150 0x7  ;Vertical Line > Black
 
-    gui, add, text, x12 ys+10  section, Folder
+    gui, add, text, xm ys+10  section, Folder
     Gui, Add, Button, ys-3 gOpenFolder, Open
     gui, add, button, ys-3 gAddNewFolder, New
-    Gui, Add, ListBox, x12 w160 hwndhTargetPath vTargetPath gSaveSettings, %MyPaths%
+    gui, add, button, ys-3 gRecycleFolder, Recycle
+
+    Gui, Add, ListBox, xm w250 hwndhTargetPath vTargetPath , %MyPaths%
     ItemHeight := LB_GetItemHeight(hTargetPath)
     hIndex := StrSplit(MyPaths, "|").length() * ItemHeight
     GuiControl, move, TargetPath , h%hIndex%
-   
-    iniRead, selItem, %SettingsFile%, Settings, Path   
-    ControlGet, Items, List, , TargetPath
-    Loop, Parse, MyPaths, |
-        if A_LoopField = %selItem%
-            {
-                GuiControl, Choose, TargetPath, %A_Index% 
-                break
-            }
 
     gui, add, text, ys section  , Extension
-    Gui, Add, Button, ys-3  w18 h18 gAddExtension, +
-    Gui, Add, Button, ys-3 w18 h18 gRemoveExtension, -
+    Gui, Add, Button, ys-3  w24  gAddExtension, +
+    Gui, Add, Button, ys-3 w24  gRemoveExtension, -
 
-    Gui, Add, ListBox, w70 hwndhTargetExtension vTargetExtension xs section gSaveSettings, %MyExtensions%
+    IniRead, MyExtensions, %guiname%.ini, %guiname%, MyExtensions 
+
+    Gui, Add, ListBox, w70 hwndhTargetExtension vTargetExtension xs section, %MyExtensions%
     ItemHeight := LB_GetItemHeight(hTargetExtension)
     hIndex := StrSplit(MyExtensions, "|").length() * ItemHeight
     GuiControl, move, TargetExtension , h%hIndex%
 
-    iniRead, selItem, %SettingsFile%, Settings, Extension   
-    ControlGet, Items, List, , TargetExtension
-    Loop, Parse, MyExtensions, |
-        if A_LoopField = %selItem%
-            {
-                GuiControl, Choose, TargetExtension, %A_Index% 
-                break
-            }
-
-
     Gui, +AlwaysOnTop -MinimizeBox -MaximizeBox -LastFound
-    Gui, Show, autosize, Script Saver
-    MyPaths := ""
+    Gui, Show,  x10000 y10000 autosize, %guiName%
+    guiRestore(,guiName)
 }
 
-LoadExtensions(){
-    IniRead, MyExtensions, config.ini, Settings, MyExtensions 
+GuiEscape:
+GuiClose:
+{
+    SaveSettings()
+    Gui, Hide
+    return
 }
 
 AddNewFolder(){
@@ -134,7 +117,7 @@ AddNewFolder(){
     gui,show
     if StrLen(NewFolder) =0
         return
-    FileCreateDir, saved scripts\%NewFolder%
+    FileCreateDir, %basePath%\%NewFolder%
     MyPaths .= "|" . NewFolder
 
     ; Remove leading and trailing '|' if present
@@ -144,14 +127,41 @@ AddNewFolder(){
     MyPaths := StrReplace(MyPaths, "||", "|")
         
     GuiControl, , TargetPath, %NewFolder%
+    GuiControl, ChooseString, TargetPath, %NewFolder% 
     ItemHeight := LB_GetItemHeight(hTargetPath)
     hIndex := StrSplit(MyPaths, "|").length() * ItemHeight
     GuiControl, move, TargetPath , h%hIndex%
     gui, show, AutoSize
 }
 
+RecycleFolder(){
+    global
+    GuiControlGet, TargetPath, , TargetPath
+    FileRecycle, %basePath%\%TargetPath%
+
+    Gui, Submit, NoHide
+    Temp := ""
+    Loop, Parse, MyPaths, |
+    {
+        if !A_LoopField || (A_LoopField = TargetPath)
+            continue
+        Temp .= "|" . A_LoopField
+    }
+
+    StringMid, MyPaths, Temp, 2
+    GuiControl, , TargetPath,|
+    GuiControl, , TargetPath, %MyPaths%
+
+    ItemHeight := LB_GetItemHeight(hTargetPath)
+    hIndex := StrSplit(MyPaths, "|").length() * ItemHeight
+    GuiControl, move, TargetPath , h%hIndex%
+        
+    SaveSettings()
+    gui,show, AutoSize    
+}
+
 LoadPaths(){
-    MyPaths .= ""
+    MyPaths := ""
     Loop Files, %basePath%\*, DR  
         {
             SplitPath, A_LoopFileFullPath, FileName, Folder, Extension, Filename_no_ext	
@@ -163,46 +173,18 @@ LoadPaths(){
         return
 }
 
-GuiEscape:
-GuiClose:
-{
-    SaveSettings()
-    Gui, Hide
-    return
-}
-
-
-OpenFolder:
+OpenFolder(){
+    global
     Gui, Submit, NoHide
     Run, %basePath%\%TargetPath%\
-    return
-
-SaveSettings()
-{
-    Gui, Submit, NoHide
-    IniWrite, %TargetPath%, %SettingsFile%, Settings, Path
-    IniWrite, %TargetExtension%, %SettingsFile%, Settings, Extension
-    IniWrite, %ChEditAfterSave%, %SettingsFile%, Settings, EditAfterSave
-    IniWrite, %ChAskFileName%, %SettingsFile%, Settings, AskFileName
-    IniWrite, %MyExtensions%, %SettingsFile%, Settings, MyExtensions
-
-    IniWrite, %OptAppend%, %SettingsFile%, Settings, OptAppend
-    IniWrite, %OptOverwrite%, %SettingsFile%, Settings, OptOverwrite
-
-    GuiControlGet, EditFileNameValue, , EditFileName
-    iniWrite, %EditFileNameValue%, %SettingsFile%, Settings, FileName
-
-    GuiControlGet, EditPrefixURLValue, , EditPrefixURL
-    iniWrite, %EditPrefixURLValue%, %SettingsFile%, Settings, EditPrefixURLValue
-
-    GuiControlGet, EditSufixURLValue, , EditSufixURL
-    iniWrite, %EditSufixURLValue%, %SettingsFile%, Settings, EditSufixURLValue
-
-    return
+    
 }
 
-AddExtension()
-{
+SaveSettings(){
+    guiSave(,guiName)
+}
+
+AddExtension(){
     global
     Gui, Submit, NoHide
     gui,hide
@@ -226,13 +208,11 @@ AddExtension()
     hIndex := StrSplit(MyExtensions, "|").length() * ItemHeight
     GuiControl, move, TargetExtension , h%hIndex%
     
-    SaveSettings()
     gui,show, AutoSize
-    return
+    
 }
 
-RemoveExtension()
-{
+RemoveExtension(){
     global
     Gui, Submit, NoHide
     Temp := ""
@@ -253,11 +233,10 @@ RemoveExtension()
         
     SaveSettings()
     gui,show, AutoSize
-    return
 }
 
-SaveScript()
-{
+SaveScript(){
+    global
     Gui, Hide
     Gui, Submit, NoHide
 
@@ -279,20 +258,17 @@ SaveScript()
         WinGetTitle, sURL, A
     }
 
-    Extension := TargetExtension
-    saveToFolder := TargetPath
+    saveToFolder := basepath "\" TargetPath
 
     if (saveToFolder = "")
         FileSelectFolder, saveToFolder, %A_ScriptDir%
-    Else
-        saveToFolder := basePath "\" saveToFolder
+    if (saveToFolder = "")
+        Return
 
     ; FileCreateDir, %saveToFolder%
-    GuiControlGet, EditFileNameValue, , EditFileName
-    if StrLen(EditFileNameValue) > 0
-    {
-        filename := EditFileNameValue
-    }else if (ChAskFileName = 1) or (%EditFileNameValue% = ""){
+    ; GuiControlGet, EditFileNameValue, , EditFileName
+    filename := EditFileName
+    if (StrLen(filename) = 0) and (ChAskFileName = 1) {
         gui, hide
         InputBox, filename, Enter the name for the script's file,,,,130
         gui,show
@@ -300,8 +276,7 @@ SaveScript()
             filename := ""
     }
     
-    
-    saveToFile := (saveToFolder ? saveToFolder : basePath) "\" (filename ? filename : A_Now) "." TargetExtension
+    saveToFile := saveToFolder "\" (filename ? filename : A_Now) "." TargetExtension
 
     GuiControlGet, EditPrefixURLValue, , EditPrefixURL
     GuiControlGet, EditSufixURLValue, , EditSufixURL
@@ -313,16 +288,22 @@ SaveScript()
     if (ChCaptureURL = 1)
         FileAppend, %EditPrefixURLValue% SAVED FROM : %sURL% %EditSufixURLValue%`n`n%textToSave%, %saveToFile%, UTF-8
     Else
-        FileAppend, `n`n SAVED FROM : %textToSave%, %saveToFile%, UTF-8
+        FileAppend, `n`n%textToSave%, %saveToFile%, UTF-8
     
     if (ChEditAfterSave = 1)
-        Run, edit %saveToFile%
-
+        {
+        run edit %savetofile%
+        }
+    
+    ToolTip,  %saveToFile% `n`nT%textToSave%,  (A_ScreenWidth/2) -400, A_ScreenHeight - 100
+    SetTimer, RemoveToolTip, -3000 
     textToSave := filename := savedClipboard := saveToFile := ""
     Gui, Show
-    return
 }
 
+RemoveToolTip:
+ToolTip
+return
 
 GetActiveBrowserURL() {
 	global ModernBrowsers, LegacyBrowsers
