@@ -14,21 +14,45 @@ IfExist, %I_Icon%
 ; Event for Tray icon left-click
 OnMessage(0x404, "AHK_NOTIFYICON")
 
+;for mouse over control to show tooltip
+OnMessage(0x200, "WM_MOUSEMOVE")
+
 RegExMatch(A_ScriptName, "^(.*?)\.", basename)    
 global guiName := basename1 ;" " VERSION
 
 global basePath := A_ScriptDir "\Snippets"
 global MyPaths := ""
 global MyExtensions := ""
+global EditFileName_TT := ""
 
-
-AHK_NOTIFYICON(wParam, lParam)
-{
+AHK_NOTIFYICON(wParam, lParam){
     if (lParam = 0x201) ; WM_LBUTTONDOWN
     {
         CreateGui()
         return 0
     }
+}
+
+WM_MOUSEMOVE(){
+	static CurrControl, PrevControl, _TT
+	CurrControl := A_GuiControl
+	If (CurrControl <> PrevControl){
+			SetTimer, DisplayToolTip, -300 	; shorter wait, shows the tooltip quicker
+			PrevControl := CurrControl
+	}
+	return
+	
+	DisplayToolTip:
+	try
+			ToolTip % %CurrControl%_TT
+	catch
+			ToolTip
+	SetTimer, RemoveToolTip, -2000
+	return
+	
+	RemoveToolTip:
+	ToolTip
+	return
 }
 
 createGui()
@@ -43,6 +67,7 @@ CreateGui(){
 
     gui, add, Text,xm y10 section, Name 
     Gui, Add, Edit, ys-3 vEditFileName -wrap -wanttab -WantReturn w300 section
+    EditFileName_TT := "leave empty to use timestamp"
 
     Gui, Add, CheckBox,ys+5  vChAskFileName , Ask
 
@@ -301,9 +326,9 @@ SaveScript(){
     Gui, Show
 }
 
-RemoveToolTip:
-ToolTip
-return
+RemoveToolTip(){
+    ToolTip
+}
 
 GetActiveBrowserURL() {
 	global ModernBrowsers, LegacyBrowsers
