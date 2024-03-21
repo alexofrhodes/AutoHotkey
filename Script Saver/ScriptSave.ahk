@@ -6,8 +6,14 @@ SetKeyDelay, 50
 ModernBrowsers := "ApplicationFrameWindow,Chrome_WidgetWin_0,Chrome_WidgetWin_1,Maxthon3Cls_MainFrm,MozillaWindowClass,Slimjet_WidgetWin_1"
 LegacyBrowsers := "IEFrame,OperaWindowClass"
 
+
+RegExMatch(A_ScriptName, "^(.*?)\.", basename)    
+global guiName := basename1 ;" " VERSION
+
+global basePath := A_ScriptDir "\Snippets"
+
 ; Custom Tray Icon
-I_Icon = ScriptSaver.ico
+I_Icon = %guiName%.ico
 IfExist, %I_Icon%
     Menu, Tray, Icon, %I_Icon%
 
@@ -17,10 +23,6 @@ OnMessage(0x404, "AHK_NOTIFYICON")
 ;for mouse over control to show tooltip
 OnMessage(0x200, "WM_MOUSEMOVE")
 
-RegExMatch(A_ScriptName, "^(.*?)\.", basename)    
-global guiName := basename1 ;" " VERSION
-
-global basePath := A_ScriptDir "\Snippets"
 global MyPaths := ""
 global MyExtensions := ""
 global EditFileName_TT := ""
@@ -207,6 +209,8 @@ OpenFolder(){
 
 SaveSettings(){
     guiSave(,guiName)
+    GuiControlGet, Value,,%MyExtensions%,List
+    IniWrite, Value, %guiName%.ini, %A_ScriptName%, MyExtensions
 }
 
 AddExtension(){
@@ -321,7 +325,7 @@ SaveScript(){
         }
     
     ToolTip,  %saveToFile% `n`nT%textToSave%,  (A_ScreenWidth/2) -400, A_ScreenHeight - 100
-    SetTimer, RemoveToolTip, -3000 
+    SetTimer, RemoveToolTip, -5000 
     textToSave := filename := savedClipboard := saveToFile := ""
     Gui, Show
 }
