@@ -57,7 +57,6 @@ Main(){
 }
 
 theHandlerFunction(filePath, *) {
-	; ... code here
 	;MsgBox("File selected is" filePath)
 
 	if GetKeyState("Ctrl"){
@@ -68,6 +67,8 @@ theHandlerFunction(filePath, *) {
 		Send("{Ctrl down}v{Ctrl up}")			
 	}
 }
+
+
 
 DoNothing(*){
 	return

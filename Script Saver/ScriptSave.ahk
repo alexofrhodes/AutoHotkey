@@ -12,6 +12,11 @@ global guiName := basename1 ;" " VERSION
 
 global basePath := A_ScriptDir "\Snippets"
 
+global MyPaths         := ""
+global MyExtensions    := ""
+global EditFileName_TT := ""
+
+
 ; Custom Tray Icon
 I_Icon = %guiName%.ico
 IfExist, %I_Icon%
@@ -20,13 +25,6 @@ IfExist, %I_Icon%
 ; Event for Tray icon left-click
 OnMessage(0x404, "AHK_NOTIFYICON")
 
-;for mouse over control to show tooltip
-OnMessage(0x200, "WM_MOUSEMOVE")
-
-global MyPaths := ""
-global MyExtensions := ""
-global EditFileName_TT := ""
-
 AHK_NOTIFYICON(wParam, lParam){
     if (lParam = 0x201) ; WM_LBUTTONDOWN
     {
@@ -34,6 +32,10 @@ AHK_NOTIFYICON(wParam, lParam){
         return 0
     }
 }
+
+; mouse over control to show tooltip
+; variable ControlName_TT := "tooltip text"
+OnMessage(0x200, "WM_MOUSEMOVE")
 
 WM_MOUSEMOVE(){
 	static CurrControl, PrevControl, _TT
@@ -67,61 +69,59 @@ CreateGui(){
     Gui, Font, s10, Consolas
     LoadPaths()
 
-    gui, add, Text,xm y10 section, Name 
+    gui, add, Text, xm y10 section, Name 
     Gui, Add, Edit, ys-3 vEditFileName -wrap -wanttab -WantReturn w300 section
     EditFileName_TT := "leave empty to use timestamp"
 
-    Gui, Add, CheckBox,ys+5  vChAskFileName , Ask
+    Gui, Add, CheckBox, ys+5  vChAskFileName , Ask
 
 
-    Gui, Add, Text, section xm w400 0x10  ;Horizontal Line > Etched Gray
+    Gui, Add, Text    , section xm w400 0x10  ;Horizontal Line > Etched Gray
 
 
-    Gui, Add, Button, xm ys+10 section  gSaveScript, Save
-
-    Gui, Add, CheckBox,ys+5   vChEditAfterSave , Edit
-
-    Gui, Add, CheckBox,ys+5  vChConfirmTip , ConfirmTip
-
-    Gui, Add, Radio,ys+5 section  vOptAppend , Append
-    
-    Gui, Add, Radio,ys vOptOverwrite , Overwrite
+    Gui, Add, Button  , xm ys+10 section gSaveScript, Save
+    Gui, Add, CheckBox, ys+5 vChEditAfterSave       , Edit
+    Gui, Add, CheckBox, ys+5 vChConfirmTip          , ConfirmTip
+    Gui, Add, Radio   , ys+5 section vOptAppend     , Append    
+    Gui, Add, Radio   , ys vOptOverwrite            , Overwrite
 
 
-    Gui, Add, Text, section xm w400 0x10  ;Horizontal Line > Etched Gray
+    Gui, Add, Text    , section xm w400 0x10  ;Horizontal Line > Etched Gray
 
 
-    Gui, Add, CheckBox, xm+50 ys+10 section  vChCaptureURL , Capture URL
-    gui, add, Text,ys , Prefix
+    Gui, Add, CheckBox, xm+50 ys+10 section  vChCaptureURL ,Capture URL
 
-    Gui, Add, Edit, ys vEditPrefixURL  -wrap -wanttab -WantReturn ys-3 h20 w60 section
-    gui, add, Text,ys+3 , Sufix
-    Gui, Add, Edit, ys vEditSufixURL  -wrap -wanttab -WantReturn h20 w60 section
+    gui, add, Text    , ys, Prefix
+    Gui, Add, Edit    , ys vEditPrefixURL -wrap -wanttab -WantReturn ys-3 h20 w60 section
+
+    gui, add, Text    , ys+3, Sufix
+    Gui, Add, Edit    , ys vEditSufixURL -wrap -wanttab -WantReturn h20 w60 section
 
     Gui, Add, Text, section xm w400 0x10  ;Horizontal Line > Etched Gray
     ; Gui, Add, Text, x5 y5 h150 0x11  ;Vertical Line > Etched Gray
     ; Gui, Add, Text, x5 y155 w150 h1 0x7  ;Horizontal Line > Black
     ; Gui, Add, Text, x155 y5 w1 h150 0x7  ;Vertical Line > Black
 
-    gui, add, text, xm ys+10  section, Folder
-    Gui, Add, Button, ys-3 gOpenFolder, Open
-    gui, add, button, ys-3 gAddNewFolder, New
+    gui, add, text  , xm ys+10  section  , Folder
+    Gui, Add, Button, ys-3 gOpenFolder   , Open
+    gui, add, button, ys-3 gAddNewFolder , New
     gui, add, button, ys-3 gRecycleFolder, Recycle
 
     Gui, Add, ListBox, xm w250 hwndhTargetPath vTargetPath , %MyPaths%
-    ItemHeight := LB_GetItemHeight(hTargetPath)
-    hIndex := StrSplit(MyPaths, "|").length() * ItemHeight
+    ItemHeight  := LB_GetItemHeight(hTargetPath)
+    hIndex      := StrSplit(MyPaths, "|").length() * ItemHeight
     GuiControl, move, TargetPath , h%hIndex%
 
-    gui, add, text, ys section  , Extension
-    Gui, Add, Button, ys-3  w24  gAddExtension, +
+    gui, add, text  , ys section                , Extension
+    Gui, Add, Button, ys-3  w24  gAddExtension  , +
     Gui, Add, Button, ys-3 w24  gRemoveExtension, -
 
     IniRead, MyExtensions, %guiname%.ini, %guiname%, MyExtensions 
 
     Gui, Add, ListBox, w70 hwndhTargetExtension vTargetExtension xs section, %MyExtensions%
+
     ItemHeight := LB_GetItemHeight(hTargetExtension)
-    hIndex := StrSplit(MyExtensions, "|").length() * ItemHeight
+    hIndex     := StrSplit(MyExtensions, "|").length() * ItemHeight
     GuiControl, move, TargetExtension , h%hIndex%
 
     Gui, +AlwaysOnTop -MinimizeBox -MaximizeBox -LastFound
@@ -324,8 +324,12 @@ SaveScript(){
         run edit %savetofile%
         }
     
-    ToolTip,  %saveToFile% `n`nT%textToSave%,  (A_ScreenWidth/2) -400, A_ScreenHeight - 100
-    SetTimer, RemoveToolTip, -5000 
+    if (ChConfirmTip = 1)
+    {
+        ToolTip,  %saveToFile% `n`nT%textToSave%,  (A_ScreenWidth/2) -400, A_ScreenHeight - 100
+        SetTimer, RemoveToolTip, -5000 
+    }
+    
     textToSave := filename := savedClipboard := saveToFile := ""
     Gui, Show
 }

@@ -13,6 +13,7 @@ AddFolderStructureToMenu(menuObj, FolderPath, extensions, HandlerFunctionName) {
 	; 1) create folder menu entries
 	Loop Files FolderPath "\*", "D"
 		FolderList .= (FolderList == "") ? A_LoopFileName : "`n" . A_LoopFileName
+
 	FolderList := Sort(FolderList)
 
 	Loop Parse FolderList, "`n" {
@@ -23,11 +24,15 @@ AddFolderStructureToMenu(menuObj, FolderPath, extensions, HandlerFunctionName) {
 		menuObj.SetIcon(A_LoopField, "HICON:" . hIcon)
 	}
 
+	
+    ; Add button to open folder
+    menuObj.Add("Open Folder", (*) => OpenFolder(FolderPath))
+    menuObj.SetIcon("Open Folder", "icons\openfolder.ico")
 
-	handlerFunction := OpenFolder.Bind(FolderPath)
-	menuObj.Add("Open Folder", (*) => handlerFunction())
-	menuObj.SetIcon("Open Folder","icons\openfolder.ico")
-	menuObj.Add
+    ; Add button to save selection
+    menuObj.Add("Save Selection", (*) => SaveSelection(FolderPath))
+    menuObj.SetIcon("Save Selection", "icons\clip.ico")
+
 
 	; 2) create file menu entries
 	Loop Files, FolderPath . "\*", "F"
@@ -56,7 +61,24 @@ AddFolderStructureToMenu(menuObj, FolderPath, extensions, HandlerFunctionName) {
 
 OpenFolder(folderPath, *){
 	run folderPath
+	return
 }
+
+SaveSelection(folderPath, *) {
+    tmp := A_Clipboard
+    Send("{Ctrl down}c{Ctrl up}")
+    Sleep(50)
+    text := "`n" A_Clipboard
+    fileName := InputBox("(filename.extension)", "save as", "").Value
+    if (fileName != "") {
+        FileAppend(text, folderPath "\" filename)
+	}else{
+		
+    }
+    A_Clipboard := tmp
+    return
+}
+
 
 HasVal(haystack, needle) {
     if !(IsObject(haystack)) || (haystack.Length = 0)
